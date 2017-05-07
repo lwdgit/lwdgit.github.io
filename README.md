@@ -1,5 +1,14 @@
 # Kiss Blog
 
+本博客基于无需编译的 Kiss Blog。
+
+数据源在 https://github.com/lwdgit/blog
+
+
+## 关于Kiss blog
+
+项目地址: https://github.com/lwdgit/kiss
+
 Kiss-极简博客系统。
 
 Kiss (Keep it simple stupid.) Blog 系统理念。
