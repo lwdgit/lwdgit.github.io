@@ -1,0 +1,8 @@
+node_modules
+.vscode
+.history
+.idea
+.swp
+.Gemfile.lock
+**/.DS_Store
+npm-debug.log
