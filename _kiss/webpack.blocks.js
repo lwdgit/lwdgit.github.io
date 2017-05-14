@@ -18,6 +18,7 @@ module.exports = createConfig([
   sass(),
   addPlugins([new HtmlWebpackPlugin({
     inject: true,
+    filename: '../../app.html',
     template: './src/template.html'
   })]),
   postcss([
