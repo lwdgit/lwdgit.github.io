@@ -1,8 +1,8 @@
 import md from './md.js'
 import m from 'mithril'
 import './theme/hljs.css'
-import './theme/md.scss'
-import './theme/style.scss'
+import './theme/md.less'
+import './theme/style.less'
 
 const meta = (function () {
   const _meta = {
@@ -31,7 +31,9 @@ const Header = (category, title = (meta.title || '极简博客')) => {
   document.title = title
   return m('header', [
     m('nav.navigation', [
-      m('.menu.kissfont .kiss-menu', { onclick: () => { showMenu = true }}),
+      m('.menu.kissfont .kiss-menu', {
+        onclick: () => { showMenu = true }
+      }),
       m('.title', title),
       m('label.wrap', { class: showMenu && 'show', onclick: () => { showMenu = false } }, m('aside', [
         m('.header', [
@@ -101,14 +103,19 @@ const Posts = {
   },
   view: function (vnode) {
     return Layout('posts', this.posts.map(function (item) {
-      return m('.cell', {'data-url': item.url }, [
+      return m('.cell', {
+        'data-url': item.url
+      }, [
         m('.head', [
           m('h3', [
-            m('a.title', {href: '/' + item.url, oncreate: m.route.link }, item.title)
+            m('a.title', {
+              href: '/' + item.url,
+              oncreate: m.route.link
+            }, item.title)
           ])
         ]),
         m('.text.markdown-body', m.trust(md(item.summary))),
-         m('.meta', [
+        m('.meta', [
           m('span.date', item.date),
           m('span.category', item.category)
         ])
