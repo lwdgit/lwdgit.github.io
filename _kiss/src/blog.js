@@ -1,8 +1,8 @@
 import md from './md.js'
 import m from 'mithril'
 import './theme/hljs.css'
-import './theme/md.less'
-import './theme/style.less'
+import './theme/md.scss'
+import './theme/style.scss'
 
 const meta = (function () {
   const _meta = {}
@@ -16,24 +16,35 @@ const meta = (function () {
 
 const domain = window.location.hostname === '127.0.0.1' ? './.site' : ~meta.base.indexOf('{{') ? './data' : meta.base
 
-const Layout = function (content) {
+const Layout = function (category, content) {
   return m('.container', [
-    Header,
-    m('main', content),
+    Header(category),
+    m('main.' + category, content),
     Footer
   ])
 }
 
-const Header = m('header', [
+let showMenu = false
+const Header = category => m('header', [
   m('nav.navigation', [
-    m('.menu', m.trust('<svg aria-hidden="true" class="octicon octicon-three-bars" height="24" version="1.1" viewBox="0 0 12 16" width="18"><path fill-rule="evenodd" d="M11.41 9H.59C0 9 0 8.59 0 8c0-.59 0-1 .59-1H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1h.01zm0-4H.59C0 5 0 4.59 0 4c0-.59 0-1 .59-1H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1h.01zM.59 11H11.4c.59 0 .59.41.59 1 0 .59 0 1-.59 1H.59C0 13 0 12.59 0 12c0-.59 0-1 .59-1z"></path></svg>')),
-    m('img', {style: {height: '27px', width: '27px'}, src: meta.logo}),
-    m('input[type=checkbox].dummy#show-menu', {style: {opacity: 0}}),
-    m('label.wrap[for="show-menu"]', m('aside', [
-      m('a', { href: '/', oncreate: m.route.link }, '首页'),
-      m('a', { href: '/projects', oncreate: m.route.link }, '项目'),
-      m('a', { href: '/slides', oncreate: m.route.link }, 'Slides'),
-      m('a', { href: '/about', oncreate: m.route.link }, '关于')
+    m('.menu.kissfont .kiss-menu', { onclick: () => { showMenu = true }}),
+    m('.title', {}, meta.name || '极简博客'),
+    m('label.wrap', { class: showMenu && 'show', onclick: () => { showMenu = false } }, m('aside', [
+      m('.header', [
+        m('img', { src: 'https://avatars2.githubusercontent.com/u/5530205?v=3&s=192' })
+      ]),
+      m('a', { href: '/', oncreate: m.route.link, class: category === 'posts' && 'active' }, [
+        m('i.kissfont.kiss-home'),
+        '首页'
+      ]),
+      m('a', { href: '/projects', oncreate: m.route.link, class: category === 'project' && 'active' }, [
+        m('i.kissfont.kiss-project'),
+        '项目'
+      ]),
+      m('a', { href: '/about', oncreate: m.route.link, class: category === 'about' && 'active' }, [
+        m('i.kissfont.kiss-about'),
+        '关于'
+      ])
     ]))
   ])
 ])
@@ -56,7 +67,7 @@ const Post = {
     })
   },
   view: function () {
-    return Layout([
+    return Layout('post', [
       m('banner', [
         m('h3', m('.title', this.post.title))
       ]),
@@ -84,19 +95,17 @@ const Posts = {
     this.getData()
   },
   view: function (vnode) {
-    return Layout(this.posts.map(function (item) {
-      return m('.posts', {}, [
-        m('.cell', {}, [
-          m('.head', [
-            m('h3', [
-              m('a.title', {href: '/' + item.url, oncreate: m.route.link}, item.title)
-            ])
-          ]),
-          m('.meta', [
-            m('span.date', item.date),
-            m('span.category', item.category)
-          ]),
-          m('.text.markdown-body', m.trust(md(item.summary)))
+    return Layout('posts', this.posts.map(function (item) {
+      return m('.cell', {'data-url': item.url }, [
+        m('.head', [
+          m('h3', [
+            m('a.title', {href: '/' + item.url, oncreate: m.route.link }, item.title)
+          ])
+        ]),
+        m('.text.markdown-body', m.trust(md(item.summary))),
+         m('.meta', [
+          m('span.date', item.date),
+          m('span.category', item.category)
         ])
       ])
     }))
@@ -119,7 +128,7 @@ m.route(document.body, '/', {
       })
     },
     view () {
-      return Layout(
+      return Layout('about',
         m('.about.markdown-body', m.trust(this.about))
       )
     }

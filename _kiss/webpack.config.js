@@ -6,7 +6,8 @@ const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
-var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
+const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
+
 
 const isProd = process.argv.slice(-1)[0] === '-p'
 
@@ -14,8 +15,12 @@ isProd && rm('-rf', join(__dirname, './dist'))
 
 module.exports = {
   entry: {
-    app: [ './src/blog.js' ]
+    dev: 'webpack/hot/dev-server',
+    app: [
+      './src/blog.js' 
+    ]
   },
+  devtool: '#cheap-module-eval-source-map',
   output: {
     path: join(__dirname),
     // publicPath: './src/',
@@ -29,7 +34,7 @@ module.exports = {
         enforce: 'pre',
         test: /\.js$/,
         loader: 'standard-loader',
-        exclude: /(node_modules|bower_components|third_party|js\/)/,
+        exclude: /\/(node_modules|bower_components|sw|third_party|js\/)/,
         options: {
           // Emit errors instead of warnings (default = false)
           error: false,
