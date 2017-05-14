@@ -210,7 +210,8 @@ footer {
       box-shadow: 0 0 4px rgba(0,0,0,.25);
       .header {
         background-color: #41a5b6;
-        background: url(./navigation_header.png) no-repeat;
+        background-image: url(./navigation_header.png);
+        background-repeat: no-repeat;
         background-size: cover;
         width: 100%;
         height: 140px;
