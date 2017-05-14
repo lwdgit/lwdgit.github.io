@@ -5,7 +5,9 @@ import './theme/md.scss'
 import './theme/style.scss'
 
 const meta = (function () {
-  const _meta = {}
+  const _meta = {
+    title: document.title
+  }
   Array.prototype.forEach.call(document.querySelectorAll('meta'), function (item) {
     if (item.name) {
       _meta[item.name] = item.content
@@ -16,41 +18,44 @@ const meta = (function () {
 
 const domain = window.location.hostname === '127.0.0.1' ? './.site' : ~meta.base.indexOf('{{') ? './data' : meta.base
 
-const Layout = function (category, content) {
+const Layout = function (category, content, title) {
   return m('.container', [
-    Header(category),
+    Header(category, title),
     m('main.' + category, content),
     Footer
   ])
 }
 
 let showMenu = false
-const Header = category => m('header', [
-  m('nav.navigation', [
-    m('.menu.kissfont .kiss-menu', { onclick: () => { showMenu = true }}),
-    m('.title', {}, meta.name || '极简博客'),
-    m('label.wrap', { class: showMenu && 'show', onclick: () => { showMenu = false } }, m('aside', [
-      m('.header', [
-        m('img', { src: 'https://avatars2.githubusercontent.com/u/5530205?v=3&s=192' })
-      ]),
-      m('a', { href: '/', oncreate: m.route.link, class: category === 'posts' && 'active' }, [
-        m('i.kissfont.kiss-home'),
-        '首页'
-      ]),
-      m('a', { href: '/projects', oncreate: m.route.link, class: category === 'project' && 'active' }, [
-        m('i.kissfont.kiss-project'),
-        '项目'
-      ]),
-      m('a', { href: '/about', oncreate: m.route.link, class: category === 'about' && 'active' }, [
-        m('i.kissfont.kiss-about'),
-        '关于'
-      ])
-    ]))
+const Header = (category, title = (meta.title || '极简博客')) => {
+  document.title = title
+  return m('header', [
+    m('nav.navigation', [
+      m('.menu.kissfont .kiss-menu', { onclick: () => { showMenu = true }}),
+      m('.title', title),
+      m('label.wrap', { class: showMenu && 'show', onclick: () => { showMenu = false } }, m('aside', [
+        m('.header', [
+          m('img', { src: meta.logo })
+        ]),
+        m('a', { href: '/', oncreate: m.route.link, class: category === 'posts' && 'active' }, [
+          m('i.kissfont.kiss-home'),
+          '首页'
+        ]),
+        m('a', { href: '/projects', oncreate: m.route.link, class: category === 'project' && 'active' }, [
+          m('i.kissfont.kiss-project'),
+          '项目'
+        ]),
+        m('a', { href: '/about', oncreate: m.route.link, class: category === 'about' && 'active' }, [
+          m('i.kissfont.kiss-about'),
+          '关于'
+        ])
+      ]))
+    ])
   ])
-])
+}
 
 const Footer = m('footer', [
-  m('.copy-right', '© 2017 ' + meta.author),
+  m('.copy-right', '© 2017 kiss blog'),
   m('.links', [
     m('a', { href: meta.github }, 'Github'),
     m('a', { href: 'mailto:' + meta.mail + '?subject=Hello world' }, 'Mail')
@@ -80,7 +85,7 @@ const Post = {
         this.post.prev ? m('a', {href: '#!/' + this.post.prev.url, onclick: this.oninit.bind(null, this.post.prev.url)}, '上一篇:' + this.post.prev.title) : null,
         this.post.next ? m('a', {href: '#!/' + this.post.next.url, onclick: this.oninit.bind(null, this.post.next.url)}, '下一篇:' + this.post.next.title) : null
       ])
-    ])
+    ], this.post.title)
   }
 }
 

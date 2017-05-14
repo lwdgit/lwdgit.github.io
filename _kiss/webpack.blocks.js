@@ -1,4 +1,4 @@
-const { addPlugins, createConfig, defineConstants, env, entryPoint, setOutput, sourceMaps } = require('@webpack-blocks/webpack2')
+const { addPlugins, createConfig, defineConstants, env, entryPoint, setOutput, sourceMaps, webpack } = require('@webpack-blocks/webpack2')
 const babel = require('@webpack-blocks/babel6')
 const devServer = require('@webpack-blocks/dev-server2')
 const postcss = require('@webpack-blocks/postcss')
@@ -7,7 +7,7 @@ const autoprefixer = require('autoprefixer')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const httpd = require('./httpd')
 
-if (process.env['NODE_ENV'] === 'development') {
+if (process.env['NODE_ENV'] === 'dev') {
   httpd.run('8778', '../')
 }
 
@@ -27,11 +27,24 @@ module.exports = createConfig([
   defineConstants({
     'process.env.NODE_ENV': process.env.NODE_ENV
   }),
-  env('development', [
+  env('dev', [
     devServer(),
     devServer.proxy({
       '/.site/': { target: 'http://localhost:8778/', host: 'localhost' }
     }),
     sourceMaps()
+  ]),
+  env('prod', [
+    addPlugins([
+      new webpack.optimize.UglifyJsPlugin({
+        compress: {
+          warnings: false
+        },
+        output: {
+          comments: false
+        },
+        sourceMap: false
+      })
+    ])
   ])
 ])
