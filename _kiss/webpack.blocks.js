@@ -4,7 +4,7 @@ const extractText = require('@webpack-blocks/extract-text2')
 const devServer = require('@webpack-blocks/dev-server2')
 const postcss = require('@webpack-blocks/postcss')
 const { rm } = require('shelljs')
-rm('-rf', './build')
+
 
 const less = function (options) {
   'use strict'
@@ -34,6 +34,8 @@ const httpd = require('./httpd')
 const isDev = process.env['NODE_ENV'] === 'dev'
 if (isDev) {
   httpd.run('8778', '../')
+} else {
+  rm('-rf', './build')
 }
 
 module.exports = createConfig([
