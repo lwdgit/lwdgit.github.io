@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>{% if page.title %} {{ page.title }} | {% endif %} {{ site.name }}</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel=manifest href="manifest.json">
     <meta name="description" content="{{site.description}}" />
     <meta name="author" content="{{site.author}}"/>
     <meta name="mail" content="{{site.mail}}" />
@@ -22,6 +23,7 @@
     </style>
 </head>
 <body>
+    <noscript>检测到你的浏览器禁用了JavaScript，请将此功能打开后重新访问。</noscript>
     <script>
         if (window.location.protocol === 'https:' && 'serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js', {
@@ -31,5 +33,5 @@
             })
         }
     </script>
-<script type="text/javascript" src="/_kiss/./build/main.deeb55b3.js"></script></body>
+<script type="text/javascript" src="/_kiss/./build/main.d3832e4d.js"></script></body>
 </html>
