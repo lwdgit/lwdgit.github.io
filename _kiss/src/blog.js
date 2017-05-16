@@ -63,15 +63,27 @@ const Header = (category, title = (meta.title || '极简博客'), index = 0) => 
         m('.header', [
           m('img', { src: meta.logo })
         ]),
-        m('a', { href: '/', oncreate: m.route.link, class: category === 'posts' && 'active' }, [
+        m('a', {
+          href: '/',
+          oncreate: m.route.link,
+          class: category === 'posts' && 'active'
+        }, [
           m('i.kissfont.kiss-home'),
           '首页'
         ]),
-        m('a', { href: '/projects', oncreate: m.route.link, class: category === 'project' && 'active' }, [
+        m('a', {
+          href: '/projects',
+          oncreate: m.route.link,
+          class: category === 'project' && 'active'
+        }, [
           m('i.kissfont.kiss-project'),
           '项目'
         ]),
-        m('a', { href: '/about', oncreate: m.route.link, class: category === 'about' && 'active' }, [
+        m('a', {
+          href: '/about',
+          oncreate: m.route.link,
+          class: category === 'about' && 'active'
+        }, [
           m('i.kissfont.kiss-about'),
           '关于'
         ])
@@ -81,22 +93,28 @@ const Header = (category, title = (meta.title || '极简博客'), index = 0) => 
 }
 
 const Footer = m('footer', [
-  m('a.copy-right', { href: 'https://github.com/lwdgit/kiss' }, '© 2017 Kiss Blog'),
+  m('a.copy-right', {
+    href: 'https://github.com/lwdgit/kiss'
+  }, '© 2017 Kiss Blog'),
   m('.links', [
-    m('a', { href: meta.github }, 'Github'),
-    m('a', { href: 'mailto:' + meta.mail + '?subject=Hello world' }, 'Mail')
+    m('a', {
+      href: meta.github
+    }, 'Github'),
+    m('a', {
+      href: 'mailto:' + meta.mail + '?subject=Hello world'
+    }, 'Mail')
   ])
 ])
 
 const Post = {
   inited: false,
   post: {},
-  oninit (vnode, id) {
+  oninit (vnode) {
     if (!this) return
     this.post = {
       title: '加载中'
     }
-    m.request(domain + '/' + (!id ? 'post/' + vnode.attrs.category + '/' + vnode.attrs.id : vnode))
+    m.request(domain + '/' + 'post/' + vnode.attrs.category + '/' + vnode.attrs.id)
     .then((ret) => {
       this.post = ret
     })
@@ -112,8 +130,15 @@ const Post = {
       ]),
       m('article.markdown-body', m.trust(md(this.post.content || ''))),
       m('nav', [
-        this.post.prev ? m('a', {href: '#!/' + this.post.prev.url, onclick: this.oninit.bind(null, this.post.prev.url)}, '上一篇:' + this.post.prev.title) : null,
-        this.post.next ? m('a', {href: '#!/' + this.post.next.url, onclick: this.oninit.bind(null, this.post.next.url)}, '下一篇:' + this.post.next.title) : null
+        this.post.prev ? m('a', {
+          href: '/' + this.post.prev.url,
+          oncreate: m.route.link
+          // onclick: this.oninit.bind(null, this.post.prev.url)
+        }, '上一篇:' + this.post.prev.title) : null,
+        this.post.next ? m('a', {
+          href: '/' + this.post.next.url,
+          oncreate: m.route.link
+        }, '下一篇:' + this.post.next.title) : null
       ])
     ], this.post.title, 1)
   }
