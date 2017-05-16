@@ -10,7 +10,7 @@
     "test": "echo 'nothing'",
     "fix": "standard --fix",
     "add": "git add -A",
-    "start": "cd _kiss && yarn install && yarn run dev",
+    "start": "cd _kiss && yarn install && yarn start",
     "open": "open",
     "build": "cd _kiss && yarn install && yarn run build"
   },

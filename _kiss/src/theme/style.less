@@ -60,8 +60,18 @@ footer {
   }
 }
 
-.container {
+.page-list {
   height: 100%;
+  min-width: 200%;
+  transition: transform .3s ease-out;
+  position: relative;
+  z-index: 1;
+}
+
+.page {
+  height: 100%;
+  width: 100vw;
+  float: left;
   display: flex;
   flex-direction: column;
 }
@@ -204,9 +214,13 @@ footer {
       color: #fff;
       margin: 0;
       margin-left: -60px;
-      padding: 0 40px;
+      padding: 0 50px;
       width: 100%;
       text-align: center;
+      overflow: hidden;
+      -webkit-line-clamp: 1;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
     .wrap {
@@ -276,7 +290,10 @@ footer {
 }
 
 .indicator {
+  padding-top: 20px;
   text-align: center;
+  position: relative;
+  z-index: 100;
 }
 
 #spinner {
