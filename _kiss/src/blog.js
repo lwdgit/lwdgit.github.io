@@ -16,10 +16,9 @@ const meta = (function () {
   return _meta
 }())
 
-const domain = window.location.hostname === 'localhost' ? 'https://lwdgit.github.io/blog/' : ~(meta.base || '').indexOf('{{') ? './data' : meta.base
+const domain = window.location.hostname !== 'localhost' ? 'https://lwdgit.github.io/blog/' : ~(meta.base || '').indexOf('{{') ? './data' : meta.base
 
 let firstLanuch = true
-
 const Layout = function (category, content, title, index) {
   return m('.page', [
     Header(category, title, index),
@@ -133,7 +132,6 @@ const Post = {
         this.post.prev ? m('a', {
           href: '/' + this.post.prev.url,
           oncreate: m.route.link
-          // onclick: this.oninit.bind(null, this.post.prev.url)
         }, '上一篇:' + this.post.prev.title) : null,
         this.post.next ? m('a', {
           href: '/' + this.post.next.url,
@@ -264,8 +262,8 @@ const navigateTo = function (component, index = 0) {
     render (vnode) {
       const style = {
         width: 100 * (deepth + 1) + 'vw',
-        '-webkit-transform': `translateX(-${100 * deepth}vw)`,
-        transform: `translateX(-${100 * deepth}vw)`
+        '-webkit-transform': `translate3D(-${100 * deepth}vw, 0, 0)`,
+        transform: `translateX(-${100 * deepth}vw, 0, 0)`
       }
       return m('.page-list', {style: style}, PageList.map(c => m(c.component, c.attrs)))
     }

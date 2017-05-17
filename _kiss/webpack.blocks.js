@@ -74,7 +74,11 @@ module.exports = createConfig([
     'process.env.NODE_ENV': process.env.NODE_ENV
   }),
   env('dev', [
-    devServer(),
+    devServer({
+      disableHostCheck: true,
+      host: '0.0.0.0',
+      port: 8080
+    }),
     devServer.proxy({
       '/.site/': { target: 'http://localhost:8778/', host: 'localhost' }
     }),
