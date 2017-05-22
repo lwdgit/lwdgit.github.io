@@ -3,10 +3,6 @@ const babel = require('@webpack-blocks/babel6')
 const extractText = require('@webpack-blocks/extract-text2')
 const devServer = require('@webpack-blocks/dev-server2')
 const postcss = require('@webpack-blocks/postcss')
-const autoprefixer = require('autoprefixer')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
-
 const { rm } = require('shelljs')
 
 
@@ -32,20 +28,12 @@ const less = function (options) {
   })
 }
 
+const autoprefixer = require('autoprefixer')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const httpd = require('./httpd')
-var htmlConfig = {
-  inject: true,
-  filename: '../app.html',
-  template: './src/template.html'
-}
-
 const isDev = process.env['NODE_ENV'] === 'dev'
 if (isDev) {
   httpd.run('8778', '../')
-  htmlConfig = {
-    inject: true,
-    template: './src/template.dev.html'
-  }
 } else {
   rm('-rf', './build')
 }
@@ -54,19 +42,18 @@ module.exports = createConfig([
   entryPoint('./src/blog.js'),
   setOutput({
     filename: './build/[name].[hash:8].js',
-    publicPath: isDev ? undefined : './_kiss/'
+    publicPath: '/_kiss/'
   }),
   babel(),
   less({
     relativeUrls: true
   }),
   // extractText('./build/css/[name].[hash:8].css', 'text/x-less'),
-  addPlugins([
-    new HtmlWebpackPlugin(htmlConfig),
-    new ScriptExtHtmlWebpackPlugin({
-      defaultAttribute: 'async'
-    })
-  ]),
+  addPlugins([new HtmlWebpackPlugin({
+    inject: true,
+    filename: isDev ? 'index.html' : '../app.html',
+    template: './src/template.html'
+  })]),
   postcss([
     autoprefixer({ browsers: ['last 2 versions'] })
   ]),
@@ -74,11 +61,7 @@ module.exports = createConfig([
     'process.env.NODE_ENV': process.env.NODE_ENV
   }),
   env('dev', [
-    devServer({
-      disableHostCheck: true,
-      host: '0.0.0.0',
-      port: 8080
-    }),
+    devServer(),
     devServer.proxy({
       '/.site/': { target: 'http://localhost:8778/', host: 'localhost' }
     }),

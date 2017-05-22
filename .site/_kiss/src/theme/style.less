@@ -1,27 +1,19 @@
-@themeBg: #f2f4f7;
-@themeFg: #34495e;
-
 html {
   height: 100%;
 }
-
-* {
+div {
   box-sizing: border-box;
 }
-
 body {
   min-height: 100.1%;
   font-family: "lucida grande", "lucida sans unicode", lucida, helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
   padding: 0;
   margin: 0;
   height: 100%;
-  background: @themeBg;
-  overflow-x: hidden;
+  background: #f2f4f7; 
 }
 
-header,
-main,
-footer {
+header, main, footer {
   opacity: 1;
 }
 
@@ -33,7 +25,7 @@ footer {
 .navigation {
   display: flex;
   justify-content: space-between;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 4px rgba(0,0,0,0.3);
   position: relative;
   height: 64px;
   align-items: center;
@@ -50,10 +42,11 @@ footer {
 
   aside {
     z-index: 10;
+    
     a {
       text-decoration: none;
       padding: 0 16px;
-      color: @themeFg;
+      color: #34495e;
     }
   }
   .kissfont {
@@ -61,21 +54,10 @@ footer {
   }
 }
 
-.page-list {
+.container {
   height: 100%;
-  min-width: 100%;
-  transition: transform .3s ease-out;
-  position: relative;
-  z-index: 1;
-}
-
-.page {
-  height: 100%;
-  width: 100vw;
-  float: left;
   display: flex;
   flex-direction: column;
-  overflow: visible;
 }
 
 main {
@@ -86,6 +68,12 @@ main {
   box-sizing: border-box;
   width: 100%;
   overflow-y: scroll;
+  nav {
+    padding: 12px 0;
+    a {
+      display: block;
+    }
+  }
 }
 
 footer {
@@ -105,24 +93,23 @@ footer {
   font-weight: normal;
   margin: 0;
   font-size: 24px;
+
   &:active {
     color: #2196f3;
-  }
+  } 
   text-decoration: none;
 }
 
 .posts {
   padding: 0;
   padding-bottom: 20px;
-
   .cell {
     background: #fff;
-    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
     border-radius: 4px;
     overflow: hidden;
     margin: 12px;
   }
-
   .head {
     background: #263238;
     h3 {
@@ -134,11 +121,9 @@ footer {
       }
     }
   }
-
   .text {
     padding: 12px;
   }
-
   .meta {
     border-top: 1px solid #ddd;
     padding: 12px 6px;
@@ -149,16 +134,13 @@ footer {
 .meta {
   margin-bottom: 20px;
   font-size: 12px;
-
-  &>* {
+  & > * {
     padding: 0 6px;
   }
-
   .date {
     color: #b5b5b5;
   }
-
-  .category {
+  .category{
     color: #4caf50;
     font-weight: bold;
   }
@@ -177,17 +159,8 @@ footer {
   .markdown-body {
     padding-bottom: 20px;
   }
-
   nav {
-    background: #41a5b6;
-    padding: 0 16px;
-    margin: 0 -16px; 
-    a {
-      display: block;
-      text-decoration: none;
-      color: #fff;
-      line-height: 32px;
-    }
+    border-top: 1px solid #ddd;
   }
 }
 
@@ -199,8 +172,7 @@ footer {
 @media (max-width: 600px) {
   .navigation {
     height: 60px;
-    background: #41A5B6;
-    
+    background: #41A5B6;;
     padding: 0;
     .menu {
       color: #fff;
@@ -217,14 +189,10 @@ footer {
     .title {
       color: #fff;
       margin: 0;
-      margin-left: -60px;
-      padding: 0 50px;
+      margin-left: -40px;
+      padding: 0 40px;
       width: 100%;
       text-align: center;
-      overflow: hidden;
-      -webkit-line-clamp: 1;
-      white-space: nowrap;
-      text-overflow: ellipsis;
     }
 
     .wrap {
@@ -235,16 +203,16 @@ footer {
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0,0,0,0.5);
       z-index: 9;
       aside {
         display: block;
       }
-
       &.show {
         display: block;
       }
     }
+
     aside {
       display: none;
       position: fixed;
@@ -253,7 +221,7 @@ footer {
       overflow: scroll;
       max-width: 60%;
       min-width: 280px;
-      box-shadow: 0 0 4px rgba(0, 0, 0, .25);
+      box-shadow: 0 0 4px rgba(0,0,0,.25);
       .header {
         background-color: #41a5b6;
         background-image: url(./navigation_header.png);
@@ -269,7 +237,6 @@ footer {
           width: 100px;
         }
       }
-
       a {
         padding: 16px;
         display: flex;
@@ -279,7 +246,6 @@ footer {
           background: #DCDCDC;
         }
       }
-
       .kissfont {
         font-size: 20px;
         padding-right: 20px;
@@ -287,50 +253,9 @@ footer {
       }
     }
   }
-
   footer {
     display: none;
   }
 }
 
-.indicator {
-  padding-top: 20px;
-  text-align: center;
-  position: relative;
-  z-index: 100;
-}
-
-#spinner {
-  box-sizing: border-box;
-  stroke: @themeFg;
-  stroke-width: 3px;
-  transform-origin: 50%;
-  animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
-}
-
-@keyframes rotate {
-  from {
-    transform: rotate(0); 
-  }
-  to {
-    transform: rotate(450deg); 
-  } 
-}
-
-@keyframes line {
-  0% {
-    stroke-dasharray: 2, 85.964;
-            transform: rotate(0); 
-  }
-  50% {
-    stroke-dasharray: 65.973, 21.9911;
-    stroke-dashoffset: 0; 
-  }
-  100% {
-    stroke-dasharray: 2, 85.964;
-    stroke-dashoffset: -65.973;
-            transform: rotate(90deg); 
-  } 
-}
-
-@import "//at.alicdn.com/t/font_3yq2z9iil2d6xbt9.css";
+@import "//at.alicdn.com/t/font_go0e60j7b9pmn29.css";

@@ -3,10 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{% if page.title %}{{ page.title }} | {% endif %}{{ site.name }}</title>
+    <title>{% if page.title %} {{ page.title }} | {% endif %} {{ site.name }}</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
-    <meta name="theme-color" content="#41a5b6">
-    <link rel="manifest" href="manifest.json">
     <meta name="description" content="{{site.description}}" />
     <meta name="author" content="{{site.author}}"/>
     <meta name="mail" content="{{site.mail}}" />
@@ -24,7 +22,6 @@
     </style>
 </head>
 <body>
-    <noscript>检测到你的浏览器禁用了JavaScript，请将此功能打开后重新访问。</noscript>
     <script>
         if (window.location.protocol === 'https:' && 'serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js', {
@@ -34,5 +31,5 @@
             })
         }
     </script>
-<script type="text/javascript" src="./_kiss/./build/main.80bd5dda.js" async></script></body>
+</body>
 </html>
