@@ -17,7 +17,7 @@ module.exports = {
   entry: {
     dev: 'webpack/hot/dev-server',
     app: [
-      './src/blog.js' 
+      './blog.js' 
     ]
   },
   devtool: '#cheap-module-eval-source-map',

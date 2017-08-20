@@ -1,6 +1,6 @@
 const { addPlugins, createConfig, defineConstants, env, entryPoint, setOutput, sourceMaps, webpack } = require('@webpack-blocks/webpack2')
 const babel = require('@webpack-blocks/babel6')
-const extractText = require('@webpack-blocks/extract-text2')
+// const extractText = require('@webpack-blocks/extract-text2')
 const devServer = require('@webpack-blocks/dev-server2')
 const postcss = require('@webpack-blocks/postcss')
 const autoprefixer = require('autoprefixer')
@@ -8,7 +8,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 
 const { rm } = require('shelljs')
-
 
 const less = function (options) {
   'use strict'
@@ -32,29 +31,27 @@ const less = function (options) {
   })
 }
 
-const httpd = require('./httpd')
 var htmlConfig = {
   inject: true,
-  filename: '../app.html',
-  template: './src/template.html'
+  filename: '../../app.html',
+  template: './template.html'
 }
 
 const isDev = process.env['NODE_ENV'] === 'dev'
 if (isDev) {
-  httpd.run('8778', '../')
   htmlConfig = {
     inject: true,
-    template: './src/template.dev.html'
+    template: './template.dev.html'
   }
 } else {
-  rm('-rf', './build')
+  rm('-rf', '../../assets/')
 }
 
 module.exports = createConfig([
-  entryPoint('./src/blog.js'),
+  entryPoint('./blog.js'),
   setOutput({
-    filename: './build/[name].[hash:8].js',
-    publicPath: isDev ? undefined : './_kiss/'
+    filename: isDev ? 'assets/[name].[hash:8].js' : '../../assets/[name].[hash:8].js',
+    publicPath: isDev ? undefined : './assets/assets/'
   }),
   babel(),
   less({
@@ -76,11 +73,8 @@ module.exports = createConfig([
   env('dev', [
     devServer({
       disableHostCheck: true,
-      host: '0.0.0.0',
+      host: '127.0.0.1',
       port: 8080
-    }),
-    devServer.proxy({
-      '/.site/': { target: 'http://localhost:8778/', host: 'localhost' }
     }),
     sourceMaps()
   ]),

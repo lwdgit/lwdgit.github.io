@@ -4,19 +4,27 @@
   "description": "",
   "main": "index.js",
   "devDependencies": {
+    "co": "^4.6.0",
+    "lerna": "^2.0.0",
+    "open": "0.0.5",
     "pre-commit": "^1.2.2"
   },
   "scripts": {
     "test": "echo 'nothing'",
     "fix": "standard --fix",
     "add": "git add -A",
-    "start": "cd _kiss && yarn install && yarn start",
+    "install": "bundler install",
+    "jekyll": "bundler exec jekyll serve --verbose",
+    "build:jekyll": "bundler exec jekyll build",
+    "build:admin": "cd packages/admin && npm run build && rm -rf ../../admin && mv docs/ ../../admin && cp manifest.json ../../admin && cd ../..",
+    "build:blog": "cd packages/blog && npm run build && cd ../..",
+    "build:all": "npm run build:blog && npm run build:admin",
     "open": "open",
-    "build": "cd _kiss && yarn install && yarn run build"
+    "postinstall": "node ./scripts/install.js"
   },
   "pre-commit": {
     "run": [
-      "build",
+      "build:all",
       "test",
       "add"
     ],
