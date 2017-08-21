@@ -80,7 +80,7 @@ export default {
         }
         setTimeout(() => {
           this.isBtnLoading = false;
-        }, 2000);
+        }, 10000);
       });
     },
     saveCredient() {
