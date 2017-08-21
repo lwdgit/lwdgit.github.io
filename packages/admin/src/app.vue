@@ -74,15 +74,22 @@ export default {
   components: { Filelist },
   created() {
     this.activeMenu = this.$route.name;
-    this.user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user')) || {};
+    this.setUser();
   },
   watch: {
     '$route'(to, from) {
       this.activeMenu = this.$route.name;
-      this.user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user')) || {};
+      this.setUser();
     }
   },
   methods: {
+    setUser() {
+      try {
+        this.user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user')) || {};
+      } catch (e) {
+        this.user = {};
+      }
+    },
     logout() {
       this.$confirm('确定要注销吗?', '提示', {
         confirmButtonText: '确定',
