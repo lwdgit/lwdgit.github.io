@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { repo, octo, user } from '../../api';
+import { repo, octo, user, getUser } from '../../api';
 
 export default {
   data() {
@@ -22,11 +22,14 @@ export default {
     };
   },
   created() {
+    getUser();
     this.fetchFiles();
   },
   methods: {
     fetchFiles() {
-      if (!octo) return;
+      if (!octo) {
+        return;
+      };
       this.loading = true;
       octo.fromUrl(`https://api.github.com/repos/${user.name}/blog/git/trees/gh-pages?recursive=1`).fetch()
       .then((res) => {
