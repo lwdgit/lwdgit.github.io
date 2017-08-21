@@ -79,8 +79,8 @@ const Header = (category, title = (meta.title || '极简博客'), index = 0) => 
         m('a', {
           href: './admin'
         }, [
-          m('i.kissfont.kiss-menu'),
-          '管理'
+          m('i.kissfont.kiss-login'),
+          '登录'
         ])
       ]))
     ])
@@ -93,14 +93,12 @@ if (meta.github) {
       href: meta.github
   }, 'Github'))
 }
+
 if (meta.mail) {
   links.push(m('a', {
     href: 'mailto:' + meta.mail + '?subject=Hello world'
   }, 'Mail'))
 }
-links.push(m('a', {
-  href: './admin'
-}, '登录'))
 
 const Footer = m('footer', [
   m('.links.left', [

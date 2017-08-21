@@ -21,7 +21,7 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     let user = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (!user) {
-      next({path: '/login', query: {redirect: to.fullPath}});
+      return next({path: '/login', query: {redirect: to.fullPath}});
     }
   }
   next();

@@ -135,6 +135,7 @@ export default {
     .admin-menu-wrapper {
       overflow: auto;
       min-width: 240px;
+      width: 16%;
       .admin-menu-bar {
         width: 100%;
         min-width: 240px;

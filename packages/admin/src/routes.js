@@ -42,7 +42,7 @@ let routes = [
   },
   {
     path: '*',
-    redirect: {path: '/404'}
+    redirect: { path: '/404' }
   }
 ];
 let menuCount = routes.length;

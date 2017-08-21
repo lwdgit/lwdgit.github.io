@@ -12,7 +12,7 @@
       </el-row>
     </el-form>
     <br />
-    <mavon-editor v-model="content" class="content" :default_open="defaultOpen" />
+    <mavon-editor v-model="content" class="content" :default_open="defaultOpen" @save="save" />
   </article>
 </template>
 <script>
@@ -146,5 +146,10 @@ article {
   flex: 1;
   min-width: 100%;
   max-width: 100%;
+}
+</style>
+<style>
+.mu-item {
+  min-height: auto;
 }
 </style>
