@@ -41,7 +41,7 @@ export default {
     return {
       username: '',
       password: '',
-      rememberMe: false,
+      rememberMe: true,
       isBtnLoading: false
     };
   },

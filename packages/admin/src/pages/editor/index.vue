@@ -29,13 +29,12 @@ export default {
       path: '',
       sha: '',
       loading: false,
-      isEditing: false,
       defaultOpen: window.innerWidth > 1100 ? 'preview' : 'edit'
     };
   },
   created() {
     this.fetchFile();
-    window.onunload = window.onbeforeunload = () => {
+    window.onpagehide = window.onunload = window.onbeforeunload = () => {
       try {
         localStorage.setItem(this.sha, this.content);
       } catch (e) {}
@@ -45,7 +44,6 @@ export default {
   methods: {
     fetchFile() {
       if (!this.$route.query.path) return;
-      this.isEditing = false;
       this.loading = true;
       return repo.contents(this.$route.query.path)
       .fetch()
@@ -105,7 +103,6 @@ export default {
           message: '保存成功'
         });
         this.originContent = this.content;
-        this.isEditing = false;
       })
       .catch((err = {}) => {
         this.loading = false;

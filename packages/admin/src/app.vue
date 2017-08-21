@@ -74,12 +74,12 @@ export default {
   components: { Filelist },
   created() {
     this.activeMenu = this.$route.name;
-    this.user = JSON.parse(localStorage.getItem('user')) || {};
+    this.user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user')) || {};
   },
   watch: {
     '$route'(to, from) {
       this.activeMenu = this.$route.name;
-      this.user = JSON.parse(localStorage.getItem('user'));
+      this.user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user')) || {};
     }
   },
   methods: {
