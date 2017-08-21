@@ -69,7 +69,7 @@ export default {
   watch: {
     '$route.query'({ path, update }) {
       if (update) {
-        setTimeout(() => this.fetchFiles(), 800);
+        setTimeout(() => this.fetchFiles(), 1500);
         this.$router.replace({
           path: '/',
           query: {
