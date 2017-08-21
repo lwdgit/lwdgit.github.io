@@ -64,6 +64,7 @@ export default {
         } else {
           this.content = Base64.decode(content);
         }
+        this.originContent = this.content;
         this.loading = false;
       })
       .catch((err = {}) => {
@@ -103,6 +104,7 @@ export default {
           type: 'success',
           message: '保存成功'
         });
+        this.originContent = this.content;
         this.isEditing = false;
       })
       .catch((err = {}) => {
@@ -117,15 +119,19 @@ export default {
       const now = new Date();
       return `${now.getFullYear()}-${this.pad(now.getMonth() + 1)}-${this.pad(now.getDate())}-我是标题`;
     },
-    newPost() {
-      if (this.isEditing) {
-        return this.$message.error('请先保存你正在编辑的文章');
-      }
-      this.isEditing = true;
+    reset() {
       this.title = this.initTitle();
       this.content = '';
+      this.originContent = '';
       this.path = '';
       this.sha = null;
+    },
+    newPost() {
+      if (this.originContent !== this.content) {
+        return this.$confirm('是否放弃原有文章？').then(this.reset);
+      } else {
+        this.reset();
+      }
     }
   },
   watch: {
@@ -149,7 +155,7 @@ article {
 }
 </style>
 <style>
-.mu-item {
+.mu-item-wrapper .mu-item {
   min-height: auto;
 }
 </style>

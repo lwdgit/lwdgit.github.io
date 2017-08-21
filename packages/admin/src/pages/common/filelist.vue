@@ -84,7 +84,7 @@ export default {
 </script>
 <style>
 .el-table {
-  height: 100%;
+  height: auto;
 }
 .title {
   flex: 1;

@@ -136,10 +136,13 @@ export default {
       overflow: auto;
       min-width: 240px;
       width: 16%;
+      display: flex;
+      flex-direction: column;
       .admin-menu-bar {
+        flex: 1;
         width: 100%;
         min-width: 240px;
-        height: 100%;
+        display: flex;
       }
     }
 
@@ -150,14 +153,15 @@ export default {
       max-width: calc(100% - 24px);
       min-width: 320px;
       box-sizing: border-box;
-
+      display: flex;
+      flex-direction: column;
       .admin-content {
         padding: 20px;
         display: flex;
         flex-direction: column;
-        height: 100%;
         max-width: 100%;
         box-sizing: border-box;
+        flex: 1;
       }
     }
   }
