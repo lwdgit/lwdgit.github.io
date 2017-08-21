@@ -26,7 +26,7 @@ const runner = function (command) {
 
 function * install () {
   if (~execSync('which bundler').toString().indexOf('not found')) {
-    yield runner('gem install bundler')
+    yield runner('sudo gem install bundler')
   }
   if (!fs.existsSync('Gemfile.lock')) {
     yield runner('bundler install')

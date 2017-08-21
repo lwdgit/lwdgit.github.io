@@ -1,5 +1,5 @@
 {
-  "name": "kiss-dashboard",
+  "name": "kiss-admin",
   "version": "1.0.0",
   "description": "kiss blog后台管理",
   "main": "index.js",
