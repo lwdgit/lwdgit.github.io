@@ -10,7 +10,7 @@
               <span>{{ user.name }}</span><i class="el-icon-caret-bottom el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item @click.native="()=> location.href='../'">返回首页</el-dropdown-item>
+              <el-dropdown-item><router-link class="logo" :to="{path: '../'}">返回首页</router-link></el-dropdown-item>
               <el-dropdown-item @click.native="logout">注销</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -151,6 +151,7 @@ export default {
         width: 100%;
         min-width: 240px;
         display: flex;
+        flex-direction: column;
       }
     }
 

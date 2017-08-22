@@ -1,5 +1,5 @@
 <template>
-  <el-table :data="filelist" class="table" v-loading.body="loading" height="100%">
+  <!-- <el-table :data="filelist" class="table" v-loading.body="loading" height="100%">
     <el-table-column label="我的文件夹">
       <template scope="scope">
         <el-row type="flex" justify="space-between">
@@ -8,7 +8,11 @@
         </el-row>
       </template>
     </el-table-column>
-  </el-table>
+  </el-table> -->
+  <el-tree
+    lazy
+    :data="fileTree"
+  ></el-tree>
 </template>
 
 <script>
@@ -18,7 +22,8 @@ export default {
   data() {
     return {
       filelist: [],
-      loading: false
+      loading: false,
+      fileTree: []
     };
   },
   created() {
@@ -32,12 +37,24 @@ export default {
       };
       this.loading = true;
       octo.fromUrl(`https://api.github.com/repos/${user.name}/blog/git/trees/gh-pages?recursive=1`).fetch()
-      .then((res) => {
-        return res.tree.filter(item => /^_posts\/[^.].+\.md$/.test(item.path));
-      })
       .then(filelist => {
+        return filelist.tree.filter(item => item.path.indexOf('_posts') === 0);
+      })
+      .then(tree => {
         this.loading = false;
-        this.filelist = filelist.reverse();
+        this.filelist = tree;
+        for (let file in tree) {
+          if (item.type === 'tree') {
+            this.fileTree[item.path] = item;
+          }
+        }
+        // this.fileTree = tree
+        // .filter((item) => item.type === 'tree' && item.path !== '_posts')
+        // .map(item => ({
+        //   id: item.sha,
+        //   label: item.path.split('/').pop(),
+        //   children: []
+        // }));
       })
       .catch((err = {}) => {
         this.loading = false;
@@ -91,5 +108,8 @@ export default {
 }
 .title {
   flex: 1;
+}
+.el-tree {
+  height: auto;
 }
 </style>
