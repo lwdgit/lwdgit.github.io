@@ -143,7 +143,7 @@ export default {
     .admin-menu-wrapper {
       overflow: auto;
       min-width: 240px;
-      width: 16%;
+      width: 20%;
       display: flex;
       flex-direction: column;
       .admin-menu-bar {

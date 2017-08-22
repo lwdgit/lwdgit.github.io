@@ -1,22 +1,48 @@
 <template>
-  <!-- <el-table :data="filelist" class="table" v-loading.body="loading" height="100%">
-    <el-table-column label="我的文件夹">
-      <template scope="scope">
-        <el-row type="flex" justify="space-between">
-          <div class="title" @click="editFile(scope.row)">{{ scope.row.path.split('/').slice(1).join('/') }}</div>
-          <el-button size="small" icon="delete" type="text" @click="removeFile(scope.row)"></el-button>
-        </el-row>
-      </template>
-    </el-table-column>
-  </el-table> -->
   <el-tree
-    lazy
     :data="fileTree"
+    node-key="_path"
+    @node-click="editFile"
+    :render-content="renderContent"
+    :default-expanded-keys="['_posts']"
   ></el-tree>
 </template>
 
 <script>
 import { repo, octo, user, getUser } from '../../api';
+import EventBus from '../../event-bus';
+
+function setValue(path, val, obj) {
+  var fields = path.split('/');
+  var result = obj;
+  for (var i = 0, n = fields.length; i < n && result !== undefined; i++) {
+    var field = fields[i];
+    if (i === n - 1) {
+      result[field] = val;
+    } else {
+      result = result[field] || {};
+    }
+  }
+}
+
+function objToMenu(obj, dataArray) {
+  for (let p in obj) {
+    const { _id, _path, _type, ...other } = obj[p];
+    let data = {
+      label: p,
+      _id,
+      _path,
+      _type
+    };
+
+    for (let ip in other) { // eslint-disable-line
+      data.children = [];
+      objToMenu(other, data.children);
+      break;
+    }
+    dataArray.unshift(data);
+  }
+}
 
 export default {
   data() {
@@ -25,6 +51,12 @@ export default {
       loading: false,
       fileTree: []
     };
+  },
+  mounted() {
+    setTimeout(() => {
+      console.log(window.$bus);
+      EventBus.$on('updateFiles', this.fetchFiles);
+    }, 1000);
   },
   created() {
     getUser();
@@ -38,23 +70,19 @@ export default {
       this.loading = true;
       octo.fromUrl(`https://api.github.com/repos/${user.name}/blog/git/trees/gh-pages?recursive=1`).fetch()
       .then(filelist => {
-        return filelist.tree.filter(item => item.path.indexOf('_posts') === 0);
+        return filelist.tree.filter(item => item.path.indexOf('_posts') === 0 && !/(\/media|\/\.|\/_)/.test(item.path));
       })
       .then(tree => {
         this.loading = false;
         this.filelist = tree;
-        for (let file in tree) {
-          if (item.type === 'tree') {
-            this.fileTree[item.path] = item;
-          }
-        }
-        // this.fileTree = tree
-        // .filter((item) => item.type === 'tree' && item.path !== '_posts')
-        // .map(item => ({
-        //   id: item.sha,
-        //   label: item.path.split('/').pop(),
-        //   children: []
-        // }));
+
+        let dataObj = {};
+        tree.forEach(function(item) {
+          setValue(item.path, { _id: item.sha, _path: item.path, _type: item.type }, dataObj);
+        });
+        this.fileTree = [];
+        objToMenu(dataObj, this.fileTree);
+        this.fileTree[0].label = '我的文件夹';
       })
       .catch((err = {}) => {
         this.loading = false;
@@ -64,13 +92,15 @@ export default {
     removeFile(data) {
       return this.$confirm('是否要删除此文章？')
       .then(() => {
-        return repo.contents(data.path)
+        this.loading = true;
+        return repo.contents(data._path)
         .remove({
           message: 'remove file',
           sha: data.sha
         });
       })
       .then(() => {
+        this.loading = false;
         return this.fetchFiles();
       })
       .catch((err = {}) => {
@@ -79,12 +109,19 @@ export default {
       });
     },
     editFile(data) {
+      if (data._type === 'tree') return;
       this.$router.push({
         path: '/',
         query: {
-          path: data.path
+          path: data._path
         }
       });
+    },
+    renderContent(h, { node, data, store }) {
+      const children = [
+        h('span', { class: 'flex-1' }, node.label)
+      ];
+      return h('span', { class: 'flex flex-1' }, children);
     }
   },
   watch: {
@@ -102,7 +139,7 @@ export default {
   }
 };
 </script>
-<style>
+<style lang="scss">
 .el-table {
   height: auto;
 }
@@ -111,5 +148,15 @@ export default {
 }
 .el-tree {
   height: auto;
+  .el-tree-node__content, .flex {
+    display: flex;
+    align-items: center;
+  }
+  .flex-1 {
+    flex: 1;
+  }
+  .el-button {
+    width: 60px;
+  }
 }
 </style>

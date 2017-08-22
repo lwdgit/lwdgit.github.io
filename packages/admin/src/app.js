@@ -27,7 +27,7 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
-new Vue({
+window.$bus = new Vue({
   render: h => h(App),
   router
 }).$mount('#app');
