@@ -26,7 +26,7 @@ permalink:     ./post/:categories/:year-:month-:day-:title:output_ext
 rss_path : ./feed.xml
 
 source:  .
-include: ["_kiss"]
+include: ["admin"]
 exclude: ["node_modules", "scripts"]
 
 destination:      ./.site
