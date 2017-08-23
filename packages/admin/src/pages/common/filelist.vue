@@ -76,10 +76,10 @@ export default {
         if (this.branches) {
           resolve(this.branches);
         } else {
-          // 通过readme获取默认branch
-          repo.contents('README.md').fetch()
-          .then(({ url }) => {
-            this.branches = url.slice(url.indexOf('?ref=') + 5);
+          // 获取默认branch
+          repo.fetch()
+          .then(({ defaultBranch }) => {
+            this.branches = defaultBranch;
             resolve(this.branches);
           });
         }
