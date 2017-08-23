@@ -34,20 +34,6 @@ layouts_dir:      ./_layouts
 
 excerpt_separator: <!--more-->  # you can specify your own separator, of course.
 
-collections:
-  articles:
-    output: true
-    title: Articles
-  essays:
-    output: true
-    title: Academic Essays
-  slides:
-    output: true
-    title: Slides
-  projects:
-    output: true
-    title: Projects
-
 defaults:
   - scope:
       path: "_posts" # an empty string here means all files in the project
