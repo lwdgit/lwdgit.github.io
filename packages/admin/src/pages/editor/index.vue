@@ -20,8 +20,8 @@
         </el-col>
       </el-row>
     </el-form>
-    <embed class="attachment" v-if="rawContent" :src="rawContent" />
-    <mavon-editor v-else v-model="content" class="content" :default_open="defaultOpen" @save="save" @imgAdd="imgAdd" ref="editor" />
+    <mavon-editor v-if="isMarkdown()" v-model="content" class="content" :default_open="defaultOpen" @save="save" @imgAdd="imgAdd" ref="editor" />
+    <embed v-else class="attachment" :src="rawContent" />
   </article>
 </template>
 <script>
@@ -65,6 +65,7 @@ export default {
     fetchFile() {
       if (!this.$route.query.path) return;
       this.loading = true;
+      this.rawContent = '';
       repo.contents(this.$route.query.path)
       .fetch()
       .then(({ path, content, sha, name, downloadUrl }) => {
