@@ -61,6 +61,7 @@ export default {
         .fetch()
         .then(({ path, content, sha }) => {
           // path = path.replace(/^_posts\//, '').split('/');
+          path = path.split('/')
           this.title = path.pop();
           this.path = path.join('/') || '';
           this.sha = sha;
@@ -83,6 +84,7 @@ export default {
         .then(({ path, content }) => {
           this.loading = false;
           // path = path.replace(/^_posts\//, '').split('/');
+          path = path.split('/')
           this.title = path.pop();
           this.path = path.join('/') || '';
           this.rawContent = 'data:image/png;base64,' + content;
