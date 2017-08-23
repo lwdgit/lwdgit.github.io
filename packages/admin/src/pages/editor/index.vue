@@ -55,16 +55,15 @@ export default {
       if (!this.$route.query.path) return;
       this.loading = true;
       this.rawContent = '';
-      let promise;
-      if (this.isMarkdown()) {
-        promise = repo.contents(this.$route.query.path)
-        .fetch()
-        .then(({ path, content, sha }) => {
-          // path = path.replace(/^_posts\//, '').split('/');
-          path = path.split('/');
-          this.title = path.pop();
-          this.path = path.join('/') || '';
-          this.sha = sha;
+      repo.contents(this.$route.query.path)
+      .fetch()
+      .then(({ path, content, sha, name }) => {
+        // path = path.replace(/^_posts\//, '').split('/');
+        path = path.split('/');
+        this.title = path.pop();
+        this.path = path.join('/') || '';
+        this.sha = sha;
+        if (this.isMarkdown(name)) {
           if ((this.content = localStorage.getItem(this.sha))) {
             try {
               localStorage.removeItem(this.sha);
@@ -75,23 +74,14 @@ export default {
           } else {
             this.content = Base64.decode(content);
           }
-          this.originContent = this.content;
-          this.loading = false;
-        });
-      } else {
-        promise = repo.contents(this.$route.query.path)
-        .fetch()
-        .then(({ path, content }) => {
-          this.loading = false;
-          // path = path.replace(/^_posts\//, '').split('/');
-          path = path.split('/');
-          this.title = path.pop();
-          this.path = path.join('/') || '';
-          this.content = content;
+        } else {
           this.rawContent = 'data:image/png;base64,' + content;
-        });
-      }
-      promise
+          this.content = content;
+        }
+        
+        this.originContent = this.content;
+        this.loading = false;
+      })
       .catch((err = {}) => {
         this.loading = false;
         this.$message.error(/"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString());

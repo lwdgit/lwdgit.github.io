@@ -88,7 +88,7 @@ export default {
         return repo.git.trees(`${branches}?recursive=1&rd=${Math.random()}`).fetch();
       })
       .then(filelist => {
-        return filelist.tree.filter(item => item.path.indexOf('_posts') === 0 /* && !/(\/media|\/\.|\/_)/.test(item.path) */);
+        return filelist.tree.filter(item => item.path.indexOf('_posts') === 0 || item.path.indexOf('media') === 0 /* && !/(\/media|\/\.|\/_)/.test(item.path) */);
       })
       .then(tree => {
         this.loading = false;
@@ -100,7 +100,14 @@ export default {
         });
         this.fileTree = [];
         objToMenu(dataObj, this.fileTree);
-        this.fileTree[0].label = '我的文件夹';
+        this.fileTree.forEach(item => {
+          if (item.label === '_posts') {
+            item.label = '我的文件夹';
+          } else {
+            item.label = '图片库';
+          }
+        });
+        // this.fileTree[0].label = '我的文件夹';
       })
       .catch((err = {}) => {
         this.loading = false;
