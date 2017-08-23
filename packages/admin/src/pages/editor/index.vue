@@ -15,7 +15,7 @@
         </el-col>
       </el-row>
     </el-form>
-    <embed v-if="rawContent" :src="rawContent" />
+    <embed class="attachment" v-if="rawContent" :src="rawContent" />
     <mavon-editor v-else v-model="content" class="content" :default_open="defaultOpen" @save="save" @imgAdd="imgAdd" ref="editor" />
   </article>
 </template>
@@ -25,6 +25,7 @@ import { mavonEditor } from 'mavon-editor';
 import 'mavon-editor/dist/css/index.css';
 import { repo } from '../../api';
 import EventBus from '../../event-bus';
+import ImageCompressor from 'image-compressor';
 
 export default {
   data() {
@@ -48,16 +49,19 @@ export default {
   },
   components: { mavonEditor },
   methods: {
+    getTime(time) {
+      const date = new Date(time);
+      return `${date.getFullYear()}${this.pad(date.getMonth() + 1)}${this.pad(date.getDate())}${this.pad(date.getHours())}${this.pad(date.getMinutes())}${this.pad(date.getMilliseconds())}`;
+    },
     isMarkdown(path = this.$route.query.path) {
       return /\.md$/.test(path);
     },
     fetchFile() {
       if (!this.$route.query.path) return;
       this.loading = true;
-      this.rawContent = '';
       repo.contents(this.$route.query.path)
       .fetch()
-      .then(({ path, content, sha, name }) => {
+      .then(({ path, content, sha, name, downloadUrl }) => {
         // path = path.replace(/^_posts\//, '').split('/');
         path = path.split('/');
         this.title = path.pop();
@@ -75,7 +79,7 @@ export default {
             this.content = Base64.decode(content);
           }
         } else {
-          this.rawContent = 'data:image/png;base64,' + content;
+          this.rawContent = downloadUrl; // 'data:image/png;base64,' + content;
           this.content = content;
         }
 
@@ -92,8 +96,10 @@ export default {
         this.$message.error('请输入文件名');
         return;
       }
-      // let path = '_posts/' + (this.path ? this.path + '/' : '') + this.title;
-      let path = (this.path ? this.path + '/' : '') + this.title;
+      if (!/^(_posts|media)/.test(this.path)) {
+        this.path = '_posts/' + this.path.replace(/(^\/|\/$)/, '');
+      }
+      let path = this.path + '/' + this.title;
       const config = {
         path,
         message: 'update file: ' + path,
@@ -105,10 +111,8 @@ export default {
         config.message = 'create file: ' + path;
       }
       this.loading = true;
-      return repo.contents(path).add(config)
+      return this.upload(config)
       .then(() => {
-        this.loading = false;
-        EventBus.$emit('updateFiles');
         this.$message({
           type: 'success',
           message: '保存成功'
@@ -120,16 +124,25 @@ export default {
         this.$message.error(/"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString());
       });
     },
+    upload(config) {
+      return repo.contents(config.path).add(config)
+      .then((response) => {
+        this.loading = false;
+        EventBus.$emit('updateFiles');
+        return response;
+      });
+    },
     pad(num) {
       return num > 9 ? num : '0' + num;
     },
     initTitle() {
       const now = new Date();
-      return `${now.getFullYear()}-${this.pad(now.getMonth() + 1)}-${this.pad(now.getDate())}-我是标题.md`;
+      return `${now.getFullYear()}-${this.pad(now.getMonth() + 1)}-${this.pad(now.getDate())}-请修改标题.md`;
     },
     reset() {
       this.title = this.initTitle();
       this.content = '';
+      this.rawContent = '';
       this.originContent = '';
       this.path = '';
       this.sha = null;
@@ -163,10 +176,40 @@ export default {
         this.reset();
       }
     },
+    getBase64(file) {
+      return new Promise((resolve, reject) => {
+        new ImageCompressor(file, { // eslint-disable-line
+          quality: 0.8,
+          success(result) {
+            var reader = new FileReader();
+            reader.readAsDataURL(result);
+            reader.onload = resolve;
+            reader.onerror = reject;
+          },
+          error(e) {
+            reject(e);
+          }
+        });
+      });
+    },
     imgAdd(filename, file) {
-      console.log(this.$refs['editor'].$imgUpdateByUrl);
-      // this.$vm.$imgUpdateByUrl
-      this.$refs['editor'].$img2Url(filename, './' + file.lastModified);
+      this.loading = true;
+      const name = 'media/' + this.getTime(Date.now()) + '.' + file.type.split('/').pop();
+      this.getBase64(file)
+      .then((res) => {
+        return this.upload({
+          path: name,
+          message: 'upload image: ' + file,
+          content: res.target.result.slice(res.target.result.indexOf(',') + 1)
+        });
+      })
+      .then(({ content }) => {
+        this.$refs['editor'].$img2Url(filename, content.downloadUrl);
+      })
+      .catch((err = {}) => {
+        this.loading = false;
+        this.$message.error(/"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString());
+      });
     }
   },
   watch: {
@@ -180,8 +223,9 @@ export default {
 .el-col {
   margin-bottom: 8px;
 }
-embed {
+.attachment {
   object-fit: contain;
+  max-height: 80%;
 }
 article {
   flex: 1;

@@ -102,7 +102,9 @@ export default {
         objToMenu(dataObj, this.fileTree);
         this.fileTree.forEach(item => {
           if (item.label === '_posts') {
-            item.label = '我的文件夹';
+            item.label = '我的文档';
+          } else {
+            item.label = '我的图片';
           }
         });
         // this.fileTree[0].label = '我的文件夹';
