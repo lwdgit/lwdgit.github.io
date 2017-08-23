@@ -78,7 +78,7 @@ export default {
           this.rawContent = 'data:image/png;base64,' + content;
           this.content = content;
         }
-        
+
         this.originContent = this.content;
         this.loading = false;
       })
