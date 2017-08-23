@@ -22,7 +22,9 @@ let firstLanuch = true
 const Layout = function (category, content, title, index) {
   return m('.page', [
     Header(category, title, index),
-    m('main.' + category, content),
+    m('main', [
+      m('.container .' + category, content)
+    ]),
     Footer
   ])
 }
