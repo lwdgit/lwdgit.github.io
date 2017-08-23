@@ -85,10 +85,10 @@ export default {
         }
       })
       .then((branches) => {
-        return repo.git.trees(`${branches}?recursive=1`).fetch();
+        return repo.git.trees(`${branches}?recursive=1&rd=${Math.random()}`).fetch();
       })
       .then(filelist => {
-        return filelist.tree.filter(item => item.path.indexOf('_posts') === 0 && !/(\/media|\/\.|\/_)/.test(item.path));
+        return filelist.tree.filter(item => item.path.indexOf('_posts') === 0 /* && !/(\/media|\/\.|\/_)/.test(item.path) */);
       })
       .then(tree => {
         this.loading = false;

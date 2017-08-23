@@ -59,6 +59,12 @@ footer {
   .kissfont {
     padding: 0 8px;
   }
+  .title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    -webkit-line-clamp: 1;
+  }
 }
 
 .page-list {
@@ -113,10 +119,6 @@ footer {
   margin: 0;
   font-size: 24px;
   flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  -webkit-line-clamp: 1;
   &:active {
     color: #2196f3;
   }
@@ -132,7 +134,7 @@ footer {
     box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
     border-radius: 4px;
     overflow: hidden;
-    margin: 12px;
+    margin: 12px 0;
     flex-shrink: 0;
   }
 

@@ -15,7 +15,8 @@
         </el-col>
       </el-row>
     </el-form>
-    <mavon-editor v-model="content" class="content" :default_open="defaultOpen" @save="save" @imgAdd="imgAdd" ref="editor" />
+    <embed v-if="rawContent" :src="rawContent" />
+    <mavon-editor v-else v-model="content" class="content" :default_open="defaultOpen" @save="save" @imgAdd="imgAdd" ref="editor" />
   </article>
 </template>
 <script>
@@ -31,6 +32,7 @@ export default {
       title: this.initTitle(),
       content: '',
       path: '',
+      rawContent: '',
       sha: '',
       loading: false,
       defaultOpen: window.innerWidth > 1100 ? 'preview' : 'edit'
@@ -46,29 +48,47 @@ export default {
   },
   components: { mavonEditor },
   methods: {
+    isMarkdown() {
+      return /\.md$/.test(this.$route.query.path);
+    },
     fetchFile() {
       if (!this.$route.query.path) return;
       this.loading = true;
-      return repo.contents(this.$route.query.path)
-      .fetch()
-      .then(({ path, content, sha }) => {
-        path = path.replace(/^_posts\//, '').split('/');
-        this.title = path.pop();
-        this.path = path.join('/') || '';
-        this.sha = sha;
-        if ((this.content = localStorage.getItem(this.sha))) {
-          try {
-            localStorage.removeItem(this.sha);
-          } catch (e) {}
-          this.$nextTick(() => {
-            document.querySelector('.admin-body').scrollLeft = 1000;
-          });
-        } else {
-          this.content = Base64.decode(content);
-        }
-        this.originContent = this.content;
-        this.loading = false;
-      })
+      this.rawContent = '';
+      let promise;
+      if (this.isMarkdown()) {
+        promise = repo.contents(this.$route.query.path)
+        .fetch()
+        .then(({ path, content, sha }) => {
+          path = path.replace(/^_posts\//, '').split('/');
+          this.title = path.pop();
+          this.path = path.join('/') || '';
+          this.sha = sha;
+          if ((this.content = localStorage.getItem(this.sha))) {
+            try {
+              localStorage.removeItem(this.sha);
+            } catch (e) {}
+            this.$nextTick(() => {
+              document.querySelector('.admin-body').scrollLeft = 1000;
+            });
+          } else {
+            this.content = Base64.decode(content);
+          }
+          this.originContent = this.content;
+          this.loading = false;
+        });
+      } else {
+        promise = repo.contents(this.$route.query.path)
+        .fetch()
+        .then(({ path, content }) => {
+          this.loading = false;
+          path = path.replace(/^_posts\//, '').split('/');
+          this.title = path.pop();
+          this.path = path.join('/') || '';
+          this.rawContent = 'data:image/png;base64,' + content;
+        });
+      }
+      promise
       .catch((err = {}) => {
         this.loading = false;
         this.$message.error(/"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString());
@@ -166,6 +186,9 @@ export default {
 <style scoped>
 .el-col {
   margin-bottom: 8px;
+}
+embed {
+  object-fit: contain;
 }
 article {
   flex: 1;
