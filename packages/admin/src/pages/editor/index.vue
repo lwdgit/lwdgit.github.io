@@ -69,7 +69,6 @@ export default {
       repo.contents(this.$route.query.path)
       .fetch()
       .then(({ path, content, sha, name, downloadUrl }) => {
-        // path = path.replace(/^_posts\//, '').split('/');
         path = path.split('/');
         this.title = path.pop();
         this.path = path.join('/') || '';
@@ -219,15 +218,14 @@ export default {
       });
     },
     copy() {
-      console.log(this.$refs['copyText']);
       var copyTextarea = this.$refs['copyText'].$refs['input'];
       copyTextarea.select();
       try {
         var successful = document.execCommand('copy');
-        var msg = successful ? 'successful' : 'unsuccessful';
-        console.log('Copying text command was ' + msg);
+        var msg = successful ? '成功' : '失败';
+        this.$message('复制' + msg);
       } catch (err) {
-        console.log('Oops, unable to copy');
+        this.$message.error('请手工复制链接');
       }
     }
   },
