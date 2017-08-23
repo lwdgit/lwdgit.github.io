@@ -10,7 +10,7 @@
               <span>{{ user.name }}</span><i class="el-icon-caret-bottom el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item><router-link class="logo" :to="{path: '../'}">返回首页</router-link></el-dropdown-item>
+              <el-dropdown-item @click.native="gotoHome">返回首页</el-dropdown-item>
               <el-dropdown-item @click.native="logout">注销</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -119,6 +119,9 @@ export default {
       } catch (e) {
         this.user = {};
       }
+    },
+    gotoHome() {
+      location.href = '../';
     },
     logout() {
       this.$confirm('确定要注销吗?', '提示', {
