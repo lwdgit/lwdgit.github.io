@@ -98,16 +98,16 @@ export default {
         tree.forEach(function(item) {
           setValue(item.path, { _id: item.sha, _path: item.path, _type: item.type }, dataObj);
         });
-        this.fileTree = [];
-        objToMenu(dataObj, this.fileTree);
-        this.fileTree.forEach(item => {
+        const fileTree = [];
+        objToMenu(dataObj, fileTree);
+        fileTree.forEach(item => {
           if (item.label === '_posts') {
             item.label = '我的文档';
           } else {
             item.label = '我的图片';
           }
         });
-        // this.fileTree[0].label = '我的文件夹';
+        this.fileTree = fileTree;
       })
       .catch((err = {}) => {
         this.loading = false;

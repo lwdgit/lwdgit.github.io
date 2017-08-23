@@ -103,9 +103,9 @@ export default {
         return;
       }
       if (!/^(_posts|media)/.test(this.path)) {
-        this.path = '_posts/' + this.path.replace(/(^\/)/, '');
+        this.path = ('_posts/' + this.path.replace(/(^\/)/, '')).replace(/(\/$)/g, '');
       }
-      let path = this.path.replace(/(\/$)/g, '') + '/' + this.title;
+      let path = this.path + '/' + this.title;
       const config = {
         path,
         message: 'update file: ' + path,
