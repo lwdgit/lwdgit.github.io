@@ -2,13 +2,17 @@
   <article v-loading.full="loading">
     <el-form>
       <el-row :gutter="12">
-        <el-col :md="14">
+        <el-col :md="12">
           <el-input placeholder="请输入文章标题" v-model="title"></el-input>
         </el-col>
-        <el-col :xs="12" :sm="16" :md="4">
+        <el-col :xs="10" :sm="14" :md="4">
           <el-input placeholder="保存目录, 可以为空" v-model="path"></el-input>
         </el-col>
-        <el-col :xs="12" :sm="8" :md="6"><el-button type="primary" @click="save">保存</el-button><el-button @click="newPost">新建</el-button></el-col>
+        <el-col :xs="14" :sm="10" :md="8">
+          <el-button type="primary" @click="save">保存</el-button>
+          <el-button @click="newPost">新建</el-button>
+          <el-button type="danger" icon="delete" @click="removeFile"></el-button>
+        </el-col>
       </el-row>
     </el-form>
     <br />
@@ -20,6 +24,7 @@ import { Base64 } from 'js-base64';
 import { mavonEditor } from 'mavon-editor';
 import 'mavon-editor/dist/css/index.css';
 import { repo } from '../../api';
+import EventBus from '../../event-bus';
 
 export default {
   data() {
@@ -122,6 +127,25 @@ export default {
       this.originContent = '';
       this.path = '';
       this.sha = null;
+    },
+    removeFile(data) {
+      return this.$confirm('是否要删除此文章？')
+      .then(() => {
+        this.loading = true;
+        return repo.contents(this.$route.query.path)
+        .remove({
+          message: 'remove file',
+          sha: this.sha
+        });
+      })
+      .then(() => {
+        this.loading = false;
+        EventBus.$emit('updateFiles');
+      })
+      .catch((err = {}) => {
+        this.loading = false;
+        this.$message.error(/"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString());
+      });
     },
     newPost() {
       if (this.originContent !== this.content) {

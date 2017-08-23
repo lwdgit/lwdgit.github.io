@@ -10,6 +10,7 @@
               <span>{{ user.name }}</span><i class="el-icon-caret-bottom el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item><router-link class="logo" :to="{path: '../'}">返回首页</router-link></el-dropdown-item>
               <el-dropdown-item @click.native="logout">注销</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -142,7 +143,7 @@ export default {
     .admin-menu-wrapper {
       overflow: auto;
       min-width: 240px;
-      width: 16%;
+      width: 20%;
       display: flex;
       flex-direction: column;
       .admin-menu-bar {
@@ -150,6 +151,7 @@ export default {
         width: 100%;
         min-width: 240px;
         display: flex;
+        flex-direction: column;
       }
     }
 
