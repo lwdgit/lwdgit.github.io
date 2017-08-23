@@ -3,7 +3,7 @@
     <template v-if="!$route.meta.hidden">
       <!-- header start  -->
       <header class="admin-header">
-        <router-link class="logo" :to="{path: '/'}">极简博客管理系统</router-link>
+        <router-link class="logo" :to="{path: '/'}">极简博客后台管理</router-link>
         <div class="user-info" v-if="user.name">
           <el-dropdown trigger="click">
             <span class="el-dropdown-link">
@@ -19,10 +19,10 @@
       <!-- header end  -->
 
       <!-- body start  -->
-      <div class="admin-body">
+      <div class="admin-body" :class="globalClass">
 
         <!-- menu start -->
-        <aside class="admin-menu-wrapper" ref="aside">
+        <aside class="admin-menu-wrapper" ref="aside" :style="{ width: sideBarWidth }">
           <el-menu :default-active="activeMenu" class="admin-menu-bar" router>
             <template v-for="(route, index) in $router.options.routes[$router.options.routes.length - 2].children">
               <template v-if="route.children && route.name">
@@ -42,7 +42,7 @@
           </el-menu>
         </aside>
         <!-- menu end -->
-
+        <div class="admin-content-resizer" ref="resizer"></div>
         <!-- content start -->
         <div class="admin-content-wrapper">
           <section class="admin-content">
@@ -68,6 +68,8 @@ export default {
         name: '',
         avatar: ''
       },
+      globalClass: '',
+      sideBarWidth: '20%',
       openSideBar: true,
       activeMenu: ''
     };
@@ -76,6 +78,7 @@ export default {
   created() {
     this.activeMenu = this.$route.name;
     this.setUser();
+    this.$nextTick(this.initSidebar);
   },
   watch: {
     '$route'(to, from) {
@@ -84,6 +87,32 @@ export default {
     }
   },
   methods: {
+    initSidebar() {
+      const aside = this.$refs['aside'];
+      const resizer = this.$refs['resizer'];
+      let currentWidth = aside.offsetWidth;
+      const position = {
+        startX: 0,
+        endX: 0,
+        release: true
+      };
+      this.sideBarWidth = currentWidth + 'px';
+      resizer.addEventListener('mousedown', (e) => {
+        position.release = false;
+        position.startX = e.clientX;
+        this.globalClass = 'no-select';
+      });
+      window.addEventListener('mousemove', (e) => {
+        if (position.release) return;
+        position.endX = e.clientX;
+        this.sideBarWidth = currentWidth + (position.endX - position.startX) + 'px';
+      });
+      window.addEventListener('mouseup', (e) => {
+        position.release = true;
+        currentWidth = parseInt(this.sideBarWidth, 10);
+        this.globalClass = '';
+      });
+    },
     setUser() {
       try {
         this.user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user')) || {};
@@ -109,6 +138,9 @@ export default {
 @import './styles/_variables.scss';
 .el-message-box {
   max-width: 100%;
+}
+.no-select {
+  user-select: none;
 }
 .admin {
   display: flex;
@@ -153,6 +185,12 @@ export default {
         display: flex;
         flex-direction: column;
       }
+    }
+
+    .admin-content-resizer {
+      cursor: pointer;
+      width: 6px;
+      cursor: col-resize;
     }
 
     // content

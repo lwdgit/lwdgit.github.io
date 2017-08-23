@@ -53,10 +53,11 @@ export default {
     };
   },
   mounted() {
-    setTimeout(() => {
-      console.log(window.$bus);
-      EventBus.$on('updateFiles', this.fetchFiles);
-    }, 1000);
+    EventBus.$on('updateFiles', () => {
+      setTimeout(() => {
+        this.fetchFiles();
+      }, 1000);
+    });
   },
   created() {
     getUser();

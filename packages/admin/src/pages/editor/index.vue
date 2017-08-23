@@ -5,17 +5,16 @@
         <el-col :md="12">
           <el-input placeholder="请输入文章标题" v-model="title"></el-input>
         </el-col>
-        <el-col :xs="10" :sm="14" :md="4">
+        <el-col :xs="24" :sm="14" :md="4">
           <el-input placeholder="保存目录, 可以为空" v-model="path"></el-input>
         </el-col>
-        <el-col :xs="14" :sm="10" :md="8">
+        <el-col :xs="24" :sm="10" :md="8">
           <el-button type="primary" @click="save">保存</el-button>
-          <el-button @click="newPost">新建</el-button>
+          <el-button @click="newPost" icon="plus"></el-button>
           <el-button type="danger" icon="delete" @click="removeFile"></el-button>
         </el-col>
       </el-row>
     </el-form>
-    <br />
     <mavon-editor v-model="content" class="content" :default_open="defaultOpen" @save="save" />
   </article>
 </template>
@@ -163,6 +162,9 @@ export default {
 };
 </script>
 <style scoped>
+.el-col {
+  margin-bottom: 8px;
+}
 article {
   flex: 1;
   display: flex;
