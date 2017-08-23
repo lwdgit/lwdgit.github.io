@@ -3,7 +3,7 @@ layout: null
 ---
 {
   "name": "{{site.title}}",
-  "short_name": "{{site.title}}",
+  "short_name": "管理后台",
   "description": "{{site.title}} - 管理后台",
   "start_url": "./?from=homescreen",
   "icons": [

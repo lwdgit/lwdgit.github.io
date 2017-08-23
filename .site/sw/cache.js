@@ -34,14 +34,17 @@ const PWA_OPTION = {
 const PWA_LIST_OPTION = {
   cache: {
     name: `LIST-${CACHE_NAME}`,
-    maxAgeSeconds: 60 * 60 * 6
+    maxAgeSeconds: 86400
   }
 };
 
 
 toolbox.options.cache.name = CACHE_NAME;
-toolbox.router.default = toolbox.fastest;
+toolbox.router.default = toolbox.networkFirst;
+toolbox.options.networkTimeoutSeconds = 6;
+toolbox.options.successResponses = /^200$/;
 toolbox.router.get(/.*\.(js|gif|png|svg|jpg|css)$/, toolbox.cacheFirst);
+toolbox.router.get('/repos/*', toolbox.networkOnly);
 
 // Claim all clients and delete old caches that are no longer needed.
 self.addEventListener('activate', event => {

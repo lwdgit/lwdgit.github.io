@@ -16,38 +16,71 @@ const meta = (function () {
   return _meta
 }())
 
-const domain = window.location.hostname === '127.0.0.1' ? './.site' : ~meta.base.indexOf('{{') ? './data' : meta.base
+const domain = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'https://lwdgit.github.io/blog/' : ~(meta.base || '').indexOf('{{') ? './data' : meta.base
 
-const Layout = function (category, content, title) {
-  return m('.container', [
-    Header(category, title),
+let firstLanuch = true
+const Layout = function (category, content, title, index) {
+  return m('.page', [
+    Header(category, title, index),
     m('main.' + category, content),
     Footer
   ])
 }
 
-let showMenu = false
-const Header = (category, title = (meta.title || '极简博客')) => {
+const store = {
+  showMenu: false,
+  post: {}
+}
+
+const Header = (category, title = (meta.title || '极简博客'), index = 0) => {
   document.title = title
+  if (firstLanuch && category === 'post') {
+    firstLanuch = false
+  }
+
   return m('header', [
     m('nav.navigation', [
-      m('.menu.kissfont .kiss-menu', {
-        onclick: () => { showMenu = true }
+      m('.menu.kissfont', {
+        class: index === 0 ? 'kiss-menu' : 'kiss-arrow-back',
+        onclick: (e) => {
+          if (index === 0) {
+            store.showMenu = true
+          } else {
+            window.history.back()
+          }
+        }
       }),
       m('.title', title),
-      m('label.wrap', { class: showMenu && 'show', onclick: () => { showMenu = false } }, m('aside', [
+      m('label.wrap', {
+        class: store.showMenu && 'show',
+        onclick: () => {
+          store.showMenu = false
+        }
+      }, m('aside', [
         m('.header', [
           m('img', { src: meta.logo })
         ]),
-        m('a', { href: '/', oncreate: m.route.link, class: category === 'posts' && 'active' }, [
+        m('a', {
+          href: '/',
+          oncreate: m.route.link,
+          class: category === 'posts' && 'active'
+        }, [
           m('i.kissfont.kiss-home'),
           '首页'
         ]),
-        m('a', { href: '/projects', oncreate: m.route.link, class: category === 'project' && 'active' }, [
+        m('a', {
+          href: '/projects',
+          oncreate: m.route.link,
+          class: category === 'project' && 'active'
+        }, [
           m('i.kissfont.kiss-project'),
           '项目'
         ]),
-        m('a', { href: '/about', oncreate: m.route.link, class: category === 'about' && 'active' }, [
+        m('a', {
+          href: '/about',
+          oncreate: m.route.link,
+          class: category === 'about' && 'active'
+        }, [
           m('i.kissfont.kiss-about'),
           '关于'
         ])
@@ -57,52 +90,88 @@ const Header = (category, title = (meta.title || '极简博客')) => {
 }
 
 const Footer = m('footer', [
-  m('a.copy-right', { href: 'https://github.com/lwdgit/kiss' }, '© 2017 Kiss Blog'),
+  m('.links.left', [
+    m('a.copy-right', {
+      href: 'https://github.com/lwdgit/kiss'
+    }, '© 2017 Kiss Blog')
+  ]),
   m('.links', [
-    m('a', { href: meta.github }, 'Github'),
-    m('a', { href: 'mailto:' + meta.mail + '?subject=Hello world' }, 'Mail')
+    m('a', {
+      href: meta.github
+    }, 'Github'),
+    m('a', {
+      href: 'mailto:' + meta.mail + '?subject=Hello world'
+    }, 'Mail')
   ])
 ])
 
+const requestPost = function (attrs) {
+  return m.request(domain + '/post/' + attrs.category + '/' + attrs.id)
+  .then(ret => {
+    store.post = ret
+  })
+}
+
 const Post = {
   inited: false,
-  post: {},
-  oninit: function (vnode, id) {
-    m.request(domain + '/' + (!id ? 'post/' + vnode.attrs.category + '/' + vnode.attrs.id : vnode))
-    .then(function (ret) {
-      Post.post = ret
-    })
-  },
-  view: function () {
+  view (vnode) {
     return Layout('post', [
       m('banner', [
-        m('h3', m('.title', this.post.title))
+        m('h3', m('.title', store.post.title))
       ]),
       m('.meta', [
-        m('span.date', this.post.date),
-        m('span.category', this.post.category)
+        m('span.date', store.post.date),
+        m('span.category', store.post.category)
       ]),
-      m('article.markdown-body', m.trust(md(this.post.content || ''))),
+      m('article.markdown-body', m.trust(md(store.post.content || ''))),
       m('nav', [
-        this.post.prev ? m('a', {href: '#!/' + this.post.prev.url, onclick: this.oninit.bind(null, this.post.prev.url)}, '上一篇:' + this.post.prev.title) : null,
-        this.post.next ? m('a', {href: '#!/' + this.post.next.url, onclick: this.oninit.bind(null, this.post.next.url)}, '下一篇:' + this.post.next.title) : null
+        store.post.prev ? m('a', {
+          href: '/' + store.post.prev.url,
+          oncreate: m.route.link
+        }, '上一篇:' + store.post.prev.title) : null,
+        store.post.next ? m('a', {
+          href: '/' + store.post.next.url,
+          oncreate: m.route.link
+        }, '下一篇:' + store.post.next.title) : null
       ])
-    ], this.post.title)
+    ], store.post.title, 1)
   }
 }
 
 const Posts = {
   posts: [],
+  next: '/page/',
+  loading: true,
   getData: function () {
-    m.request(domain + '/page/', {mode: 'no-cors'}).then(function (ret) {
-      Posts.posts = ret.posts
+    this.loading = true
+    if (!this.next) return
+    m.request(domain + this.next, {mode: 'no-cors'})
+    .then((ret) => {
+      this.posts = [...this.posts, ...ret.posts]
+      this.next = ret.next
+      this.loading = false
     })
   },
-  oninit: function () {
-    this.getData()
+  onscrollEnd () {
+    let container
+    window.addEventListener('scroll', (e) => {
+      if (this.loading) return
+      container = container || document.querySelector('.posts')
+      if (!container) {
+        return
+      }
+      if (container.clientHeight + container.scrollTop > container.scrollHeight - 10) {
+        this.getData()
+      }
+      document.body.scrollTop = 0
+    })
   },
-  view: function (vnode) {
-    return Layout('posts', this.posts.map(function (item) {
+  oninit () {
+    this.getData()
+    this.onscrollEnd()
+  },
+  view (vnode) {
+    const posts = this.posts.map(function (item) {
       return m('.cell', {
         'data-url': item.url
       }, [
@@ -120,41 +189,59 @@ const Posts = {
           m('span.category', item.category)
         ])
       ])
-    }))
+    })
+
+    posts.push(
+      m('.indicator', {
+        style: {
+          display: this.next ? '' : 'none'
+        }
+      }, m.trust(`
+        <svg viewBox="0 0 32 32" width="32" height="32">
+          <circle id="spinner" cx="16" cy="16" r="14" fill="none"></circle>
+        </svg>
+      `))
+    )
+    return Layout('posts', posts)
   }
+}
+
+const About = {
+  about: null,
+  oninit () {
+    const self = this
+    m.request({
+      url: domain + '/about.md',
+      deserialize: ret => ret
+    })
+    .then(function (ret) {
+      self.about = md(ret)
+    })
+  },
+  view () {
+    return Layout('about',
+      m('.about.markdown-body', m.trust(this.about))
+    )
+  }
+}
+
+const Projects = {
+  oninit () {
+    window.location.href = meta.github + '?utf8=%E2%9C%93&tab=repositories&q=&type=source&language='
+  },
+  view () {}
 }
 
 m.route(document.body, '/', {
   '/': Posts,
-  '/post/:category/:id': Post,
-  '/about': {
-    about: null,
-    oninit () {
-      const self = this
-      m.request({
-        url: domain + '/about.md',
-        deserialize: ret => ret
-      })
-      .then(function (ret) {
-        self.about = md(ret)
-      })
+  '/post/:category/:id': {
+    onmatch (attrs) {
+      requestPost(attrs)
     },
-    view () {
-      return Layout('about',
-        m('.about.markdown-body', m.trust(this.about))
-      )
+    render (vnode) {
+      return m(Post)
     }
   },
-  '/projects': {
-    oninit () {
-      window.location.href = meta.github + '?utf8=%E2%9C%93&tab=repositories&q=&type=source&language='
-    },
-    view () {}
-  },
-  '/slides': {
-    oninit () {},
-    view () {
-      return Layout('This is undefined')
-    }
-  }
+  '/about': About,
+  '/projects': Projects
 })
