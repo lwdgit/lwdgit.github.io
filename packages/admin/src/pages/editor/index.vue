@@ -1,6 +1,6 @@
 <template>
   <article v-loading.full="loading">
-    <el-form>
+    <el-form label-width="50px">
       <el-row :gutter="12">
         <el-col :md="12">
           <el-input placeholder="请输入文章标题" v-model="title"></el-input>
@@ -12,6 +12,11 @@
           <el-button type="primary" @click="save">保存</el-button>
           <el-button @click="newPost" icon="plus"></el-button>
           <el-button type="danger" icon="delete" @click="removeFile"></el-button>
+        </el-col>
+        <el-col v-if="rawContent">
+          <el-input readonly v-model="downloadUrl" ref="copyText">
+            <template slot="append"><el-button @click="copy">复制</el-button></template>
+          </el-input>
         </el-col>
       </el-row>
     </el-form>
@@ -35,6 +40,7 @@ export default {
       path: '',
       rawContent: '',
       sha: '',
+      downloadUrl: '',
       loading: false,
       defaultOpen: window.innerWidth > 1100 ? 'preview' : 'edit'
     };
@@ -82,7 +88,7 @@ export default {
           this.rawContent = downloadUrl; // 'data:image/png;base64,' + content;
           this.content = content;
         }
-
+        this.downloadUrl = downloadUrl;
         this.originContent = this.content;
         this.loading = false;
       })
@@ -97,9 +103,9 @@ export default {
         return;
       }
       if (!/^(_posts|media)/.test(this.path)) {
-        this.path = '_posts/' + this.path.replace(/(^\/|\/$)/, '');
+        this.path = '_posts/' + this.path.replace(/(^\/)/, '');
       }
-      let path = this.path + '/' + this.title;
+      let path = this.path.replace(/(\/$)/g, '') + '/' + this.title;
       const config = {
         path,
         message: 'update file: ' + path,
@@ -210,6 +216,18 @@ export default {
         this.loading = false;
         this.$message.error(/"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString());
       });
+    },
+    copy() {
+      console.log(this.$refs['copyText']);
+      var copyTextarea = this.$refs['copyText'].$refs['input'];
+      copyTextarea.select();
+      try {
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'successful' : 'unsuccessful';
+        console.log('Copying text command was ' + msg);
+      } catch (err) {
+        console.log('Oops, unable to copy');
+      }
     }
   },
   watch: {
