@@ -103,8 +103,6 @@ export default {
         this.fileTree.forEach(item => {
           if (item.label === '_posts') {
             item.label = '我的文件夹';
-          } else {
-            item.label = '图片库';
           }
         });
         // this.fileTree[0].label = '我的文件夹';
