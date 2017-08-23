@@ -69,7 +69,7 @@ export default {
         avatar: ''
       },
       globalClass: '',
-      sideBarWidth: '20%',
+      sideBarWidth: '16%',
       openSideBar: true,
       activeMenu: ''
     };

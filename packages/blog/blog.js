@@ -5,9 +5,7 @@ import './theme/md.less'
 import './theme/style.less'
 
 const meta = (function () {
-  const _meta = {
-    title: document.title
-  }
+  const _meta = {}
   Array.prototype.forEach.call(document.querySelectorAll('meta'), function (item) {
     if (item.name) {
       _meta[item.name] = item.content
@@ -18,7 +16,6 @@ const meta = (function () {
 
 const domain = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'https://lwdgit.github.io/kiss/' : ~(meta.base || '').indexOf('{{') ? './data' : meta.base
 
-let firstLanuch = true
 const Layout = function (category, content, title, index) {
   return m('.page', [
     Header(category, title, index),
@@ -34,10 +31,9 @@ const store = {
   post: {}
 }
 
-const Header = (category, title = (meta.title || '极简博客'), index = 0) => {
-  document.title = title
-  if (firstLanuch && category === 'post') {
-    firstLanuch = false
+const Header = (category, title = '', index = 0) => {
+  if (title) {
+    document.title = title + ' - ' + (meta.title || '极简博客')
   }
 
   return m('header', [

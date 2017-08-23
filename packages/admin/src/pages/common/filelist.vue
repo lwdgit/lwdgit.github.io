@@ -1,5 +1,6 @@
 <template>
   <el-tree
+    v-loading.body="loading"
     :data="fileTree"
     node-key="_path"
     @node-click="editFile"
@@ -9,7 +10,7 @@
 </template>
 
 <script>
-import { repo, octo, user, getUser } from '../../api';
+import { repo, octo, getUser } from '../../api';
 import EventBus from '../../event-bus';
 
 function setValue(path, val, obj) {
@@ -49,11 +50,13 @@ export default {
     return {
       filelist: [],
       loading: false,
-      fileTree: []
+      fileTree: [],
+      branches: ''
     };
   },
   mounted() {
     EventBus.$on('updateFiles', () => {
+      this.loading = true;
       setTimeout(() => {
         this.fetchFiles();
       }, 1000);
@@ -69,7 +72,21 @@ export default {
         return;
       };
       this.loading = true;
-      octo.fromUrl(`https://api.github.com/repos/${user.name}/blog/git/trees/gh-pages?recursive=1`).fetch()
+      return new Promise((resolve) => {
+        if (this.branches) {
+          resolve(this.branches);
+        } else {
+          // 通过readme获取默认branch
+          repo.contents('README.md').fetch()
+          .then(({ url }) => {
+            this.branches = url.slice(url.indexOf('?ref=') + 5);
+            resolve(this.branches);
+          });
+        }
+      })
+      .then((branches) => {
+        return repo.git.trees(`${branches}?recursive=1`).fetch();
+      })
       .then(filelist => {
         return filelist.tree.filter(item => item.path.indexOf('_posts') === 0 && !/(\/media|\/\.|\/_)/.test(item.path));
       })
@@ -123,19 +140,6 @@ export default {
         h('span', { class: 'flex-1' }, node.label)
       ];
       return h('span', { class: 'flex flex-1' }, children);
-    }
-  },
-  watch: {
-    '$route.query'({ path, update }) {
-      if (update) {
-        setTimeout(() => this.fetchFiles(), 1500);
-        this.$router.replace({
-          path: '/',
-          query: {
-            path
-          }
-        });
-      }
     }
   }
 };

@@ -15,7 +15,7 @@
         </el-col>
       </el-row>
     </el-form>
-    <mavon-editor v-model="content" class="content" :default_open="defaultOpen" @save="save" />
+    <mavon-editor v-model="content" class="content" :default_open="defaultOpen" @save="save" @imgAdd="imgAdd" ref="editor" />
   </article>
 </template>
 <script>
@@ -95,13 +95,7 @@ export default {
       return repo.contents(path).add(config)
       .then(() => {
         this.loading = false;
-        this.$router.replace({
-          path: '/',
-          query: {
-            path,
-            update: 'success'
-          }
-        });
+        EventBus.$emit('updateFiles');
         this.$message({
           type: 'success',
           message: '保存成功'
@@ -150,8 +144,16 @@ export default {
       if (this.originContent !== this.content) {
         return this.$confirm('是否放弃原有文章？').then(this.reset);
       } else {
+        this.$router.replace({
+          path: '/'
+        });
         this.reset();
       }
+    },
+    imgAdd(filename, file) {
+      console.log(this.$refs['editor'].$imgUpdateByUrl);
+      // this.$vm.$imgUpdateByUrl
+      this.$refs['editor'].$img2Url(filename, './' + file.lastModified);
     }
   },
   watch: {
