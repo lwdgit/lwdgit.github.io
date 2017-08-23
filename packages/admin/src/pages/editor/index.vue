@@ -48,8 +48,8 @@ export default {
   },
   components: { mavonEditor },
   methods: {
-    isMarkdown() {
-      return /\.md$/.test(this.$route.query.path);
+    isMarkdown(path = this.$route.query.path) {
+      return /\.md$/.test(path);
     },
     fetchFile() {
       if (!this.$route.query.path) return;
@@ -87,6 +87,7 @@ export default {
           path = path.split('/');
           this.title = path.pop();
           this.path = path.join('/') || '';
+          this.content = content;
           this.rawContent = 'data:image/png;base64,' + content;
         });
       }
@@ -101,13 +102,12 @@ export default {
         this.$message.error('请输入文件名');
         return;
       }
-      this.title = this.title.replace(/\.md$/, '') + '.md';
       // let path = '_posts/' + (this.path ? this.path + '/' : '') + this.title;
       let path = (this.path ? this.path + '/' : '') + this.title;
       const config = {
         path,
         message: 'update file: ' + path,
-        content: Base64.encode(this.content)
+        content: this.rawContent ? this.content : Base64.encode(this.content)
       };
       if (this.sha) {
         config.sha = this.sha;
@@ -135,7 +135,7 @@ export default {
     },
     initTitle() {
       const now = new Date();
-      return `${now.getFullYear()}-${this.pad(now.getMonth() + 1)}-${this.pad(now.getDate())}-我是标题`;
+      return `${now.getFullYear()}-${this.pad(now.getMonth() + 1)}-${this.pad(now.getDate())}-我是标题.md`;
     },
     reset() {
       this.title = this.initTitle();
