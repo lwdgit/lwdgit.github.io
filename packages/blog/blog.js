@@ -34,6 +34,8 @@ const store = {
 const Header = (category, title = '', index = 0) => {
   if (title) {
     document.title = title + ' - ' + (meta.title || '极简博客')
+  } else {
+    document.title = (meta.title || '极简博客')
   }
 
   return m('header', [
@@ -204,7 +206,7 @@ const Posts = {
         </svg>
       `))
     )
-    return Layout('posts', posts)
+    return Layout('posts', posts, '文章列表')
   }
 }
 
