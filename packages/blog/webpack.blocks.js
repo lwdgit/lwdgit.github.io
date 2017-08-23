@@ -65,7 +65,7 @@ module.exports = createConfig([
     })
   ]),
   postcss([
-    autoprefixer({ browsers: ['last 2 versions'] })
+    autoprefixer({ browsers: ['android 4', 'ios 9'] })
   ]),
   defineConstants({
     'process.env.NODE_ENV': process.env.NODE_ENV

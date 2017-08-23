@@ -112,6 +112,11 @@ footer {
   font-weight: normal;
   margin: 0;
   font-size: 24px;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  -webkit-line-clamp: 1;
   &:active {
     color: #2196f3;
   }
@@ -233,10 +238,6 @@ article {
       padding: 0 50px;
       width: 100%;
       text-align: center;
-      overflow: hidden;
-      -webkit-line-clamp: 1;
-      white-space: nowrap;
-      text-overflow: ellipsis;
     }
 
     .wrap {
