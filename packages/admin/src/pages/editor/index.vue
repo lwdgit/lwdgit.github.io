@@ -60,7 +60,7 @@ export default {
         promise = repo.contents(this.$route.query.path)
         .fetch()
         .then(({ path, content, sha }) => {
-          path = path.replace(/^_posts\//, '').split('/');
+          // path = path.replace(/^_posts\//, '').split('/');
           this.title = path.pop();
           this.path = path.join('/') || '';
           this.sha = sha;
@@ -82,7 +82,7 @@ export default {
         .fetch()
         .then(({ path, content }) => {
           this.loading = false;
-          path = path.replace(/^_posts\//, '').split('/');
+          // path = path.replace(/^_posts\//, '').split('/');
           this.title = path.pop();
           this.path = path.join('/') || '';
           this.rawContent = 'data:image/png;base64,' + content;
@@ -100,7 +100,8 @@ export default {
         return;
       }
       this.title = this.title.replace(/\.md$/, '') + '.md';
-      let path = '_posts/' + (this.path ? this.path + '/' : '') + this.title;;
+      // let path = '_posts/' + (this.path ? this.path + '/' : '') + this.title;
+      let path = (this.path ? this.path + '/' : '') + this.title;
       const config = {
         path,
         message: 'update file: ' + path,
