@@ -21,7 +21,7 @@
       </el-row>
     </el-form>
     <mavon-editor v-if="isMarkdown()" v-model="content" class="content" :default_open="defaultOpen" @save="save" @imgAdd="imgAdd" ref="editor" />
-    <embed v-else class="attachment" :src="rawContent" />
+    <img v-else class="attachment" :src="rawContent" />
   </article>
 </template>
 <script>
