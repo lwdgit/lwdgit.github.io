@@ -43,8 +43,12 @@ export default {
       downloadUrl: '',
       loading: false,
       defaultOpen: window.innerWidth > 1100 ? 'preview' : 'edit',
-      size: window.innerWidth > 1100 ? 'large' : 'mini',
+      size: window.innerWidth > 1100 ? 'large' : 'small',
       toolbars: window.innerWidth > 1100 ? undefined : {
+        bold: true,
+        italic: true,
+        header: true,
+        mark: true,
         undo: true,
         redo: true,
         code: true,
@@ -52,6 +56,7 @@ export default {
         fullscreen: true,
         imagelink: true,
         preview: true,
+        readmodel: true,
         save: true
       }
     };
@@ -250,7 +255,7 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .el-col {
   margin-bottom: 8px;
 }
@@ -270,8 +275,18 @@ article {
   max-width: 100%;
 }
 </style>
-<style>
+<style lang="scss">
 .mu-item-wrapper .mu-item {
   min-height: auto;
+}
+.el-message {
+  max-width: 100%;
+  .el-message__group {
+    height: auto;
+    p {
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+  }
 }
 </style>

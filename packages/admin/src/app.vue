@@ -191,8 +191,7 @@ export default {
     }
 
     .admin-content-resizer {
-      cursor: pointer;
-      width: 6px;
+      min-width: 6px;
       cursor: col-resize;
     }
 
