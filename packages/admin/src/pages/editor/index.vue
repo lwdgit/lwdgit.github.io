@@ -3,25 +3,25 @@
     <el-form label-width="50px">
       <el-row :gutter="12">
         <el-col :md="12">
-          <el-input placeholder="请输入文章标题" v-model="title"></el-input>
+          <el-input placeholder="请输入文章标题" v-model="title" :size="size"></el-input>
         </el-col>
         <el-col :xs="24" :sm="14" :md="4">
-          <el-input placeholder="保存目录, 可以为空" v-model="path"></el-input>
+          <el-input placeholder="保存目录, 可以为空" v-model="path" :size="size"></el-input>
         </el-col>
         <el-col :xs="24" :sm="10" :md="8">
-          <el-button type="primary" @click="save">保存</el-button>
-          <el-button @click="newPost" icon="plus"></el-button>
-          <el-button type="danger" icon="delete" @click="removeFile"></el-button>
+          <el-button type="primary" @click="save" :size="size">保存</el-button>
+          <el-button @click="newPost" icon="plus" :size="size"></el-button>
+          <el-button type="danger" icon="delete" @click="removeFile" :size="size"></el-button>
         </el-col>
         <el-col v-if="rawContent">
-          <el-input readonly v-model="downloadUrl" ref="copyText">
-            <template slot="append"><el-button @click="copy">复制</el-button></template>
+          <el-input readonly v-model="downloadUrl" ref="copyText" :size="size">
+            <template slot="append"><el-button @click="copy" :size="size">复制</el-button></template>
           </el-input>
         </el-col>
       </el-row>
     </el-form>
-    <mavon-editor v-if="isMarkdown()" v-model="content" class="content" :default_open="defaultOpen" @save="save" @imgAdd="imgAdd" ref="editor" />
-    <img v-else class="attachment" :src="rawContent" />
+    <mavon-editor v-show="isMarkdown()" v-model="content" class="content" :default_open="defaultOpen" @save="save" @imgAdd="imgAdd" :toolbars="toolbars" ref="editor" />
+    <img v-show="!isMarkdown()" class="attachment" :src="rawContent" />
   </article>
 </template>
 <script>
@@ -42,7 +42,23 @@ export default {
       sha: '',
       downloadUrl: '',
       loading: false,
-      defaultOpen: window.innerWidth > 1100 ? 'preview' : 'edit'
+      defaultOpen: window.innerWidth > 1100 ? 'preview' : 'edit',
+      size: window.innerWidth > 1100 ? 'large' : 'small',
+      toolbars: window.innerWidth > 1100 ? undefined : {
+        bold: true,
+        italic: true,
+        header: true,
+        mark: true,
+        undo: true,
+        redo: true,
+        code: true,
+        quote: true,
+        fullscreen: true,
+        imagelink: true,
+        preview: true,
+        readmodel: true,
+        save: true
+      }
     };
   },
   created() {
@@ -59,8 +75,8 @@ export default {
       const date = new Date(time);
       return `${date.getFullYear()}${this.pad(date.getMonth() + 1)}${this.pad(date.getDate())}${this.pad(date.getHours())}${this.pad(date.getMinutes())}${this.pad(date.getMilliseconds())}`;
     },
-    isMarkdown(path = this.$route.query.path) {
-      return /\.md$/.test(path);
+    isMarkdown(path = this.title) {
+      return /\.md$/.test(path) || path.trim() === '';
     },
     fetchFile() {
       if (!this.$route.query.path) return;
@@ -165,6 +181,9 @@ export default {
       })
       .then(() => {
         this.loading = false;
+        this.$router.replace({
+          path: '/'
+        });
         EventBus.$emit('updateFiles');
       })
       .catch((err = {}) => {
@@ -185,7 +204,7 @@ export default {
     getBase64(file) {
       return new Promise((resolve, reject) => {
         new ImageCompressor(file, { // eslint-disable-line
-          quality: 0.8,
+          quality: 0.6,
           success(result) {
             var reader = new FileReader();
             reader.readAsDataURL(result);
@@ -236,7 +255,7 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .el-col {
   margin-bottom: 8px;
 }
@@ -256,8 +275,18 @@ article {
   max-width: 100%;
 }
 </style>
-<style>
+<style lang="scss">
 .mu-item-wrapper .mu-item {
   min-height: auto;
+}
+.el-message {
+  max-width: 100%;
+  .el-message__group {
+    height: auto;
+    p {
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+  }
 }
 </style>
