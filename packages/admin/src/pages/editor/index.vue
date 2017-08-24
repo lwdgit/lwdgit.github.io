@@ -20,8 +20,8 @@
         </el-col>
       </el-row>
     </el-form>
-    <mavon-editor v-if="isMarkdown()" v-model="content" class="content" :default_open="defaultOpen" @save="save" @imgAdd="imgAdd" ref="editor" />
-    <img v-else class="attachment" :src="rawContent" />
+    <mavon-editor v-show="isMarkdown()" v-model="content" class="content" :default_open="defaultOpen" @save="save" @imgAdd="imgAdd" ref="editor" />
+    <img v-show="!isMarkdown()" class="attachment" :src="rawContent" />
   </article>
 </template>
 <script>
@@ -59,8 +59,8 @@ export default {
       const date = new Date(time);
       return `${date.getFullYear()}${this.pad(date.getMonth() + 1)}${this.pad(date.getDate())}${this.pad(date.getHours())}${this.pad(date.getMinutes())}${this.pad(date.getMilliseconds())}`;
     },
-    isMarkdown(path = this.$route.query.path) {
-      return /\.md$/.test(path);
+    isMarkdown(path = this.title) {
+      return /\.md$/.test(path) || path.trim() === '';
     },
     fetchFile() {
       if (!this.$route.query.path) return;
@@ -165,6 +165,9 @@ export default {
       })
       .then(() => {
         this.loading = false;
+        this.$route.replace({
+          path: '/'
+        });
         EventBus.$emit('updateFiles');
       })
       .catch((err = {}) => {
