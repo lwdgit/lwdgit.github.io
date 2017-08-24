@@ -153,7 +153,7 @@ export default {
     width: 100%;
     height: 60px;
     background: #20A0FF;
-    padding: 13px 20px;
+    padding: 12px 20px;
     box-sizing: border-box;
     color: #ffffff;
     display: flex;
@@ -200,13 +200,12 @@ export default {
     .admin-content-wrapper {
       flex: 1;
       max-width: 100%;
-      max-width: calc(100% - 24px);
       min-width: 320px;
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
       .admin-content {
-        padding: 20px;
+        padding: 16px;
         display: flex;
         flex-direction: column;
         max-width: 100%;

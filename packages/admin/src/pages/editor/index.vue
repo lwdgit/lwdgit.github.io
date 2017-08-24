@@ -3,24 +3,24 @@
     <el-form label-width="50px">
       <el-row :gutter="12">
         <el-col :md="12">
-          <el-input placeholder="请输入文章标题" v-model="title"></el-input>
+          <el-input placeholder="请输入文章标题" v-model="title" :size="size"></el-input>
         </el-col>
         <el-col :xs="24" :sm="14" :md="4">
-          <el-input placeholder="保存目录, 可以为空" v-model="path"></el-input>
+          <el-input placeholder="保存目录, 可以为空" v-model="path" :size="size"></el-input>
         </el-col>
         <el-col :xs="24" :sm="10" :md="8">
-          <el-button type="primary" @click="save">保存</el-button>
-          <el-button @click="newPost" icon="plus"></el-button>
-          <el-button type="danger" icon="delete" @click="removeFile"></el-button>
+          <el-button type="primary" @click="save" :size="size">保存</el-button>
+          <el-button @click="newPost" icon="plus" :size="size"></el-button>
+          <el-button type="danger" icon="delete" @click="removeFile" :size="size"></el-button>
         </el-col>
         <el-col v-if="rawContent">
-          <el-input readonly v-model="downloadUrl" ref="copyText">
-            <template slot="append"><el-button @click="copy">复制</el-button></template>
+          <el-input readonly v-model="downloadUrl" ref="copyText" :size="size">
+            <template slot="append"><el-button @click="copy" :size="size">复制</el-button></template>
           </el-input>
         </el-col>
       </el-row>
     </el-form>
-    <mavon-editor v-show="isMarkdown()" v-model="content" class="content" :default_open="defaultOpen" @save="save" @imgAdd="imgAdd" ref="editor" />
+    <mavon-editor v-show="isMarkdown()" v-model="content" class="content" :default_open="defaultOpen" @save="save" @imgAdd="imgAdd" :toolbars="toolbars" ref="editor" />
     <img v-show="!isMarkdown()" class="attachment" :src="rawContent" />
   </article>
 </template>
@@ -42,7 +42,18 @@ export default {
       sha: '',
       downloadUrl: '',
       loading: false,
-      defaultOpen: window.innerWidth > 1100 ? 'preview' : 'edit'
+      defaultOpen: window.innerWidth > 1100 ? 'preview' : 'edit',
+      size: window.innerWidth > 1100 ? 'large' : 'mini',
+      toolbars: window.innerWidth > 1100 ? undefined : {
+        undo: true,
+        redo: true,
+        code: true,
+        quote: true,
+        fullscreen: true,
+        imagelink: true,
+        preview: true,
+        save: true
+      }
     };
   },
   created() {
@@ -165,7 +176,7 @@ export default {
       })
       .then(() => {
         this.loading = false;
-        this.$route.replace({
+        this.$router.replace({
           path: '/'
         });
         EventBus.$emit('updateFiles');
@@ -188,7 +199,7 @@ export default {
     getBase64(file) {
       return new Promise((resolve, reject) => {
         new ImageCompressor(file, { // eslint-disable-line
-          quality: 0.8,
+          quality: 0.6,
           success(result) {
             var reader = new FileReader();
             reader.readAsDataURL(result);
