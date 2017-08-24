@@ -66,7 +66,7 @@ export default {
       if (!this.$route.query.path) return;
       this.loading = true;
       this.rawContent = '';
-      repo.contents(this.$route.query.path)
+      repo.contents(this.$route.query.path + '?rd=' + Math.random())
       .fetch()
       .then(({ path, content, sha, name, downloadUrl }) => {
         path = path.split('/');
