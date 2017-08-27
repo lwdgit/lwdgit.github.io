@@ -122,6 +122,8 @@ export default {
               .catch(() => {
                 this.content = content;
               });
+            } else {
+              this.content = content;
             }
             this.$nextTick(() => {
               document.querySelector('.admin-body').scrollLeft = 1000;
