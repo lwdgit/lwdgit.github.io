@@ -15,7 +15,7 @@
         </el-col>
         <el-col v-if="rawContent">
           <el-input readonly v-model="downloadUrl" ref="copyText" :size="size">
-            <template slot="append"><el-button @click="copy" :size="size">复制</el-button></template>
+            <template slot="append"><el-button @click="copy" :size="size">复制链接</el-button></template>
           </el-input>
         </el-col>
       </el-row>
@@ -65,7 +65,7 @@ export default {
     this.fetchFile();
     window.onpagehide = window.onunload = window.onbeforeunload = () => {
       try {
-        localStorage.setItem(this.sha, this.content);
+        localStorage.setItem(this.title, this.content);
       } catch (e) {}
     };
   },
@@ -79,7 +79,10 @@ export default {
       return /\.md$/.test(path) || path.trim() === '';
     },
     fetchFile() {
-      if (!this.$route.query.path) return;
+      if (!this.$route.query.path) {
+        this.initContent();
+        return;
+      };
       this.loading = true;
       this.rawContent = '';
       repo.contents(this.$route.query.path + '?rd=' + Math.random())
@@ -89,29 +92,39 @@ export default {
         this.title = path.pop();
         this.path = path.join('/') || '';
         this.sha = sha;
-        if (this.isMarkdown(name)) {
-          if ((this.content = localStorage.getItem(this.sha))) {
+        this.downloadUrl = downloadUrl;
+        this.initContent(content);
+        this.loading = false;
+      })
+      .catch((err = {}) => {
+        const message = /"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString();
+        this.loading = false;
+        if (~message.indexOf('not found')) {
+          this.content = '';
+          return;
+        }
+        this.$message.error(message.trim());
+      });
+    },
+    initContent(content) {
+      if (!this.content) {
+        if (this.isMarkdown(this.title)) {
+          if ((this.content = localStorage.getItem(this.title))) {
             try {
-              localStorage.removeItem(this.sha);
+              localStorage.removeItem(this.title);
             } catch (e) {}
             this.$nextTick(() => {
               document.querySelector('.admin-body').scrollLeft = 1000;
             });
-          } else {
+          } else if (content) {
             this.content = Base64.decode(content);
           }
         } else {
-          this.rawContent = downloadUrl; // 'data:image/png;base64,' + content;
+          this.rawContent = this.downloadUrl; // 'data:image/png;base64,' + content;
           this.content = content;
         }
-        this.downloadUrl = downloadUrl;
-        this.originContent = this.content;
-        this.loading = false;
-      })
-      .catch((err = {}) => {
-        this.loading = false;
-        this.$message.error(/"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString());
-      });
+      }
+      this.originContent = this.content;
     },
     save() {
       if (!this.title) {
@@ -142,8 +155,13 @@ export default {
         this.originContent = this.content;
       })
       .catch((err = {}) => {
-        this.loading = false;
-        this.$message.error(/"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString());
+        const message = /"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString();
+        if (~message.indexOf('does not match')) {
+          this.fetchFile();
+        } else {
+          this.loading = false;
+          this.$message.error(message.trim());
+        }
       });
     },
     upload(config) {
@@ -250,6 +268,7 @@ export default {
   },
   watch: {
     '$route.query'(val) {
+      this.reset();
       this.fetchFile();
     }
   }

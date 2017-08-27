@@ -31,12 +31,6 @@ const PWA_OPTION = {
     }
   }
 };
-const PWA_LIST_OPTION = {
-  cache: {
-    name: `LIST-${CACHE_NAME}`,
-    maxAgeSeconds: 86400
-  }
-};
 
 
 toolbox.options.cache.name = CACHE_NAME;
