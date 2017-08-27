@@ -168,7 +168,7 @@ const Posts = {
         this.getData()
       }
       document.body.scrollTop = 0
-    })
+    }, true)
   },
   oninit () {
     this.getData()
