@@ -110,7 +110,7 @@ const Footer = m('footer', [
 ])
 
 const requestPost = function (attrs) {
-  return m.request(domain + '/post/' + attrs.category + '/' + attrs.id)
+  return m.request(domain + '/post/' + attrs.category + '/' + attrs.id + '?rd=' + Math.random)
   .then(ret => {
     store.post = ret
   })
@@ -149,10 +149,14 @@ const Posts = {
   getData: function () {
     this.loading = true
     if (!this.next) return
-    m.request(domain + this.next + '?' + Math.random(), {mode: 'no-cors'})
+    m.request(domain + this.next + '?rd=' + Math.random(), {mode: 'no-cors'})
     .then((ret) => {
       this.posts = [...this.posts, ...ret.posts]
       this.next = ret.next
+      this.loading = false
+    })
+    .catch((err) => {
+      console.log(err)
       this.loading = false
     })
   },
@@ -168,7 +172,7 @@ const Posts = {
         this.getData()
       }
       document.body.scrollTop = 0
-    })
+    }, true)
   },
   oninit () {
     this.getData()
