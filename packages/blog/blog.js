@@ -110,7 +110,7 @@ const Footer = m('footer', [
 ])
 
 const requestPost = function (attrs) {
-  return m.request(domain + '/post/' + attrs.category + '/' + attrs.id + '?rd=' + Math.random)
+  return m.request(domain + '/post/' + attrs.category + '/' + attrs.id + '?rd=' + Math.random())
   .then(ret => {
     store.post = ret
   })
