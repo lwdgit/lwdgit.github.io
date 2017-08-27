@@ -17,10 +17,14 @@
         </el-col>
       </el-row>
       <el-row :gutter="12" v-else>
-        <el-col>
+        <el-col :span="20">
           <el-input readonly v-model="downloadUrl" ref="copyText" :size="size">
-            <template slot="append"><el-button @click="copy" :size="size">复制文件链接</el-button></template>
+            <template slot="append">
+              <el-button @click="copy" :size="size">复制文件链接</el-button>
+            </template>
           </el-input>
+        </el-col>
+        <el-col :span="4">
           <el-button type="danger" icon="delete" @click="removeFile" :size="size"></el-button>
         </el-col>
       </el-row>
@@ -212,7 +216,7 @@ export default {
       this.sha = null;
     },
     removeFile(data) {
-      return this.$confirm('是否要删除此文章？')
+      return this.$confirm('是否要删除此文件？')
       .then(() => {
         this.loading = true;
         return repo.contents(this.$route.query.path)
