@@ -151,7 +151,7 @@ export default {
       this.title = this.title.replace(/[\/\\]/g, '');
       let path = [
         this.prefix,
-        this.path.replace(/(^\/+\/$)/g, '').replace(/\/+/g, ''),
+        this.path.replace(/(^\/+|\/$)/g, '').replace(/\/+/g, ''),
         this.title
       ].join('/');
 

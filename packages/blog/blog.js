@@ -177,7 +177,7 @@ const Posts = {
     let container
     window.addEventListener('scroll', (e) => {
       if (this.loading) return
-      container = container || document.querySelector('.page main')
+      container = container || document.querySelector('.page main .posts')
       if (!container) {
         return
       }
