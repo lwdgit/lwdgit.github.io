@@ -111,7 +111,7 @@ export default {
           let draft = '';
           if ((draft = localStorage.getItem(this.title))) {
             if (draft && draft !== content) {
-              this.$confirm('检测到本地草稿与线上内容不致，是否使用本地草稿？')
+              this.$confirm('检测到本地草稿与线上内容不一致，是否使用本地草稿？')
               .then(() => {
                 this.content = draft;
               })
@@ -143,7 +143,7 @@ export default {
       const config = {
         path,
         message: 'update file: ' + path,
-        content: this.downloadUrl ? this.content : Base64.encode(this.content)
+        content: this.isMarkdown() ? Base64.encode(this.content) : this.content
       };
       if (this.sha) {
         config.sha = this.sha;
