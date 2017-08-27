@@ -25,7 +25,7 @@ const CACHE_NAME = `${PREFIX}-v${VERSION}`;
 const PWA_OPTION = {
   cache: {
     name: `PWA-${CACHE_NAME}`,
-    networkTimeoutSeconds: 4,
+    networkTimeoutSeconds: 2,
     queryOptions: {
       ignoreSearch: true
     }
