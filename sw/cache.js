@@ -25,7 +25,7 @@ const CACHE_NAME = `${PREFIX}-v${VERSION}`;
 const PWA_OPTION = {
   cache: {
     name: `PWA-${CACHE_NAME}`,
-    maxAgeSeconds: 60 * 60 * 12,
+    networkTimeoutSeconds: 4,
     queryOptions: {
       ignoreSearch: true
     }
@@ -35,10 +35,10 @@ const PWA_OPTION = {
 
 toolbox.options.cache.name = CACHE_NAME;
 toolbox.router.default = toolbox.networkFirst;
-toolbox.options.networkTimeoutSeconds = 6;
 toolbox.options.successResponses = /^200$/;
-toolbox.router.get(/.*\.(js|gif|png|svg|jpg|css)$/, toolbox.cacheFirst);
+toolbox.router.get(/.*\.(js|gif|png|svg|jpg|jpeg|css|woff|ttf|svg|woff2)$/, toolbox.cacheFirst);
 toolbox.router.get('/repos/*', toolbox.networkOnly);
+toolbox.router.get(/\/(page|post)\//, toolbox.networkFirst, PWA_OPTION)
 
 // Claim all clients and delete old caches that are no longer needed.
 self.addEventListener('activate', event => {
