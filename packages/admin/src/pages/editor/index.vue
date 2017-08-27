@@ -5,13 +5,13 @@
         <el-col :md="12">
           <el-input placeholder="请输入文章标题" v-model="title" :size="size"></el-input>
         </el-col>
-        <el-col :xs="24" :sm="14" :md="4">
+        <el-col :xs="24" :sm="14" :md="6">
           <el-input placeholder="存放文件夹, 可以为空" v-model="path" :size="size">
              <template slot="prepend">{{ prefix }}</template>
           </el-input>
         </el-col>
-        <el-col :xs="24" :sm="10" :md="8">
-          <el-button type="primary" @click="save" :size="size">保存</el-button>
+        <el-col :xs="24" :sm="10" :md="6">
+          <el-button v-if="isMarkdown()" type="primary" @click="save" :size="size">保存</el-button>
           <el-button v-if="isMarkdown()" @click="newPost" icon="plus" :size="size"></el-button>
           <el-button type="danger" icon="delete" @click="removeFile" :size="size"></el-button>
         </el-col>
@@ -150,8 +150,8 @@ export default {
       }
       this.title = this.title.replace(/[\/\\]/g, '');
       let path = [
-        this.prefix,
-        this.path.replace(/(^\/+|\/$)/g, '').replace(/\/+/g, ''),
+        '_post',
+        this.path.replace(/\/\/+/g, '').replace(/(^\/|\/$)/g, ''),
         this.title
       ].join('/');
 
