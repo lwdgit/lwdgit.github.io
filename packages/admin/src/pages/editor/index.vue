@@ -6,11 +6,13 @@
           <el-input placeholder="请输入文章标题" v-model="title" :size="size"></el-input>
         </el-col>
         <el-col :xs="24" :sm="14" :md="4">
-          <el-input placeholder="保存目录, 可以为空" v-model="path" :size="size"></el-input>
+          <el-input placeholder="存放文件夹, 可以为空" v-model="path" :size="size">
+             <template slot="prepend">{{ prefix }}</template>
+          </el-input>
         </el-col>
         <el-col :xs="24" :sm="10" :md="8">
           <el-button type="primary" @click="save" :size="size">保存</el-button>
-          <el-button @click="newPost" icon="plus" :size="size"></el-button>
+          <el-button v-if="isMarkdown()" @click="newPost" icon="plus" :size="size"></el-button>
           <el-button type="danger" icon="delete" @click="removeFile" :size="size"></el-button>
         </el-col>
         <el-col v-if="!isMarkdown()">
@@ -39,6 +41,7 @@ export default {
       title: this.initTitle(),
       content: '',
       path: '',
+      prefix: '我的文档',
       downloadUrl: '',
       sha: '',
       loading: false,
@@ -90,6 +93,7 @@ export default {
       .then(({ path, content, sha, name, downloadUrl }) => {
         path = path.split('/');
         this.title = path.pop();
+        this.prefix = path.shift() === 'media' ? '我的图片' : '我的文档';
         this.path = path.join('/') || '';
         this.sha = sha;
         this.downloadUrl = downloadUrl;
@@ -142,10 +146,13 @@ export default {
         this.$message.error('请输入文件名');
         return;
       }
-      if (!/^(_posts|media)/.test(this.path)) {
-        this.path = ('_posts/' + this.path.replace(/(^\/)/, '')).replace(/(\/$)/g, '');
-      }
-      let path = this.path + '/' + this.title;
+      this.title = this.title.replace(/[\/\\]/g, '');
+      let path = [
+        this.prefix,
+        this.path.replace(/(^\/+\/$)/g, '').replace(/\/+/g, ''),
+        this.title
+      ].join('/');
+
       const config = {
         path,
         message: 'update file: ' + path,
@@ -194,6 +201,7 @@ export default {
       this.title = this.initTitle();
       this.content = '';
       this.downloadUrl = '';
+      this.prefix = '我的文档';
       this.originContent = '';
       this.path = '';
       this.sha = null;
