@@ -115,7 +115,9 @@ const Footer = m('footer', [
 ])
 
 const requestPost = function (attrs) {
+  store.post = {}
   store.post.title = '加载中...'
+
   return m.request(host + attrs.url + '?rd=' + Math.random())
   .then(ret => {
     store.post = ret
@@ -141,11 +143,11 @@ const Post = {
       m('article.markdown-body', m.trust(md(store.post.content || ''))),
       m('nav', [
         store.post.prev ? m('a', {
-          href: '/' + store.post.prev.url,
+          href: store.post.prev.url,
           oncreate: m.route.link
         }, '上一篇:' + store.post.prev.title) : null,
         store.post.next ? m('a', {
-          href: '/' + store.post.next.url,
+          href: store.post.next.url,
           oncreate: m.route.link
         }, '下一篇:' + store.post.next.title) : null
       ])
