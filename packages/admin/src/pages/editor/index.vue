@@ -13,15 +13,15 @@
           <el-button @click="newPost" icon="plus" :size="size"></el-button>
           <el-button type="danger" icon="delete" @click="removeFile" :size="size"></el-button>
         </el-col>
-        <el-col v-if="rawContent">
+        <el-col v-if="!isMarkdown()">
           <el-input readonly v-model="downloadUrl" ref="copyText" :size="size">
-            <template slot="append"><el-button @click="copy" :size="size">复制链接</el-button></template>
+            <template slot="append"><el-button @click="copy" :size="size">复制文件链接</el-button></template>
           </el-input>
         </el-col>
       </el-row>
     </el-form>
     <mavon-editor v-show="isMarkdown()" v-model="content" class="content" :default_open="defaultOpen" @save="save" @imgAdd="imgAdd" :toolbars="toolbars" ref="editor" />
-    <img v-show="!isMarkdown()" class="attachment" :src="rawContent" />
+    <img v-show="!isMarkdown()" class="attachment" :src="downloadUrl" />
   </article>
 </template>
 <script>
@@ -38,9 +38,8 @@ export default {
       title: this.initTitle(),
       content: '',
       path: '',
-      rawContent: '',
-      sha: '',
       downloadUrl: '',
+      sha: '',
       loading: false,
       defaultOpen: window.innerWidth > 1100 ? 'preview' : 'edit',
       size: window.innerWidth > 1100 ? 'large' : 'small',
@@ -84,7 +83,7 @@ export default {
         return;
       };
       this.loading = true;
-      this.rawContent = '';
+      this.downloadUrl = '';
       repo.contents(this.$route.query.path + '?rd=' + Math.random())
       .fetch()
       .then(({ path, content, sha, name, downloadUrl }) => {
@@ -109,10 +108,17 @@ export default {
     initContent(content) {
       if (!this.content) {
         if (this.isMarkdown(this.title)) {
-          if ((this.content = localStorage.getItem(this.title))) {
-            try {
-              localStorage.removeItem(this.title);
-            } catch (e) {}
+          let draft = '';
+          if ((draft = localStorage.getItem(this.title))) {
+            if (draft && draft !== content) {
+              this.$confirm('检测到本地草稿与线上内容不致，是否使用本地草稿？')
+              .then(() => {
+                this.content = draft;
+              })
+              .catch(() => {
+                this.content = content;
+              });
+            }
             this.$nextTick(() => {
               document.querySelector('.admin-body').scrollLeft = 1000;
             });
@@ -120,7 +126,6 @@ export default {
             this.content = Base64.decode(content);
           }
         } else {
-          this.rawContent = this.downloadUrl; // 'data:image/png;base64,' + content;
           this.content = content;
         }
       }
@@ -138,7 +143,7 @@ export default {
       const config = {
         path,
         message: 'update file: ' + path,
-        content: this.rawContent ? this.content : Base64.encode(this.content)
+        content: this.downloadUrl ? this.content : Base64.encode(this.content)
       };
       if (this.sha) {
         config.sha = this.sha;
@@ -182,7 +187,7 @@ export default {
     reset() {
       this.title = this.initTitle();
       this.content = '';
-      this.rawContent = '';
+      this.downloadUrl = '';
       this.originContent = '';
       this.path = '';
       this.sha = null;
