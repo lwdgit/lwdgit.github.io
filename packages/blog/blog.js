@@ -160,7 +160,7 @@ const Posts = {
     let container
     window.addEventListener('scroll', (e) => {
       if (this.loading) return
-      container = container || document.querySelector('.posts')
+      container = container || document.querySelector('.page main')
       if (!container) {
         return
       }
@@ -168,7 +168,7 @@ const Posts = {
         this.getData()
       }
       document.body.scrollTop = 0
-    }, true)
+    })
   },
   oninit () {
     this.getData()
