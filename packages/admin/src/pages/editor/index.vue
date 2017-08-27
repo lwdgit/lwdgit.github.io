@@ -150,7 +150,7 @@ export default {
       }
       this.title = this.title.replace(/[\/\\]/g, '');
       let path = [
-        '_post',
+        '_posts',
         this.path.replace(/(^\/|\/$)/g, ''),
         this.title
       ].join('/').replace(/\/\/+/g, '/');
