@@ -118,7 +118,9 @@ export default {
           }
           let draft = '';
           if ((draft = localStorage.getItem(this.title))) {
-            if (draft && draft !== content) {
+            if (!content || !draft) {
+              this.content = draft || content || '';
+            } else if (draft !== content) {
               this.$confirm('检测到本地草稿与线上内容不一致，是否使用本地草稿？')
               .then(() => {
                 this.content = draft;
