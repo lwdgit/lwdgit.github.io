@@ -108,6 +108,9 @@ export default {
     initContent(content) {
       if (!this.content) {
         if (this.isMarkdown(this.title)) {
+          if (content) {
+            content = Base64.decode(content);
+          }
           let draft = '';
           if ((draft = localStorage.getItem(this.title))) {
             if (draft && draft !== content) {
@@ -123,7 +126,7 @@ export default {
               document.querySelector('.admin-body').scrollLeft = 1000;
             });
           } else if (content) {
-            this.content = Base64.decode(content);
+            this.content = content;
           }
         } else {
           this.content = content;
