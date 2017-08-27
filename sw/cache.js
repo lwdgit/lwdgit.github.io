@@ -37,7 +37,7 @@ toolbox.options.cache.name = CACHE_NAME;
 toolbox.router.default = toolbox.networkFirst;
 toolbox.options.successResponses = /^200$/;
 toolbox.router.get(/.*\.(js|gif|png|svg|jpg|jpeg|css|woff|ttf|svg|woff2)$/, toolbox.cacheFirst);
-toolbox.router.get('/repos/*', toolbox.networkOnly);
+toolbox.router.get(/\/repos\//, toolbox.networkOnly);
 toolbox.router.get(/\/(page|post)\//, toolbox.networkFirst, PWA_OPTION)
 
 // Claim all clients and delete old caches that are no longer needed.
