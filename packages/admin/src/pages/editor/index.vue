@@ -1,7 +1,7 @@
 <template>
   <article v-loading.full="loading">
     <el-form label-width="50px">
-      <el-row :gutter="12">
+      <el-row :gutter="12" v-if="isMarkdown()">
         <el-col :md="12">
           <el-input placeholder="请输入文章标题" v-model="title" :size="size"></el-input>
         </el-col>
@@ -11,14 +11,17 @@
           </el-input>
         </el-col>
         <el-col :xs="24" :sm="10" :md="6">
-          <el-button v-if="isMarkdown()" type="primary" @click="save" :size="size">保存</el-button>
-          <el-button v-if="isMarkdown()" @click="newPost" icon="plus" :size="size"></el-button>
+          <el-button type="primary" @click="save" :size="size">保存</el-button>
+          <el-button @click="newPost" icon="plus" :size="size"></el-button>
           <el-button type="danger" icon="delete" @click="removeFile" :size="size"></el-button>
         </el-col>
-        <el-col v-if="!isMarkdown()">
+      </el-row>
+      <el-row :gutter="12" v-else>
+        <el-col>
           <el-input readonly v-model="downloadUrl" ref="copyText" :size="size">
             <template slot="append"><el-button @click="copy" :size="size">复制文件链接</el-button></template>
           </el-input>
+          <el-button type="danger" icon="delete" @click="removeFile" :size="size"></el-button>
         </el-col>
       </el-row>
     </el-form>
