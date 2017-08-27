@@ -31,6 +31,7 @@ import 'mavon-editor/dist/css/index.css';
 import { repo } from '../../api';
 import EventBus from '../../event-bus';
 import ImageCompressor from 'image-compressor';
+const smallDevice = window.innerWidth > 1100;
 
 export default {
   data() {
@@ -41,9 +42,9 @@ export default {
       downloadUrl: '',
       sha: '',
       loading: false,
-      defaultOpen: window.innerWidth > 1100 ? 'preview' : 'edit',
-      size: window.innerWidth > 1100 ? 'large' : 'small',
-      toolbars: window.innerWidth > 1100 ? undefined : {
+      defaultOpen: smallDevice ? 'preview' : 'edit',
+      size: smallDevice ? 'large' : 'small',
+      toolbars: smallDevice ? undefined : {
         bold: true,
         italic: true,
         header: true,
