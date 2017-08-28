@@ -270,7 +270,7 @@ export default {
       .then((res) => {
         return this.upload({
           path: name,
-          message: 'upload image: ' + file,
+          message: 'upload image: ' + file.name,
           content: res.target.result.slice(res.target.result.indexOf(',') + 1)
         });
       })
