@@ -1,4 +1,4 @@
-importScripts('./sw/cache.js')
+importScripts('./sw/cache.js?rd' + Math.random())
 toolbox.options.debug = false;
 const VERSION = '1';
 const PREFIX = 'kiss';
