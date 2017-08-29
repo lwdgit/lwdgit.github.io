@@ -1,6 +1,6 @@
 importScripts('./sw/cache.js')
 toolbox.options.debug = false;
-const VERSION = '0';
+const VERSION = '1';
 const PREFIX = 'kiss';
 
 const CACHE_NAME = `${PREFIX}-v${VERSION}`;
