@@ -1,6 +1,4 @@
 #start
-# 基本设置 start & end 里面的为可视配置项
-
 title: 夜的第七章
 mail: lwdggm@gmail.com
 description: 夜的第七章
@@ -8,12 +6,7 @@ author: lwdgit
 github: https://github.com/lwdgit
 mail: lwdggm@gmail.com
 logo: https://avatars2.githubusercontent.com/u/5530205?v=3
-#-------------------------------------------#
-
-#-------------------------------------------#
-#数据源设置（用于实现数据源与框架分离）
-dataSource: blog
-#-------------------------------------------#
+dataSource: .
 rss_path: ./feed.xml
 #end
 
