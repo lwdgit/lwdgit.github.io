@@ -3,7 +3,7 @@
     <!-- breadcrumb start  -->
     <breadcrumb></breadcrumb>
     <!-- breadcrumb end  -->
-
+    <br />
     <div class="db-content-inner">
       <el-form ref="form" label-width="100px">
         <el-form-item v-for="item in this.settings" v-if="item.name" :label="item.name + ' :'" :prop="item.name" :key="item.name">
@@ -70,6 +70,7 @@ export default {
       });
     },
     parseSettings() {
+      this.settings = [];
       this.content.replace(/^(?:([^:#\n]+):)?[ \t]*(.*)/mg, (all, name, value) => {
         if (name) {
           this.settings.push({
