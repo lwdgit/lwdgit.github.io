@@ -1,22 +1,22 @@
 #start
-# 基本设置
-
-title: 夜的第七章
-mail: lwdggm@gmail.com
-description: 夜的第七章
-author: lwdgit
-github: https://github.com/lwdgit
-mail: lwdggm@gmail.com
-logo: https://avatars2.githubusercontent.com/u/5530205?v=3
-#-------------------------------------------#
-
-#-------------------------------------------#
-#数据源设置（用于实现数据源与框架分离）
-dataSource: blog
-#-------------------------------------------#
-
-rss_path: ./feed.xml
-paginate:     20   # 每页显示20条
+undefined: undefined
+undefined: undefined
+title: undefined
+mail: undefined
+description: undefined
+author: undefined
+github: undefined
+mail: undefined
+logo: undefined
+undefined: undefined
+undefined: undefined
+undefined: undefined
+undefined: undefined
+dataSource: undefined
+undefined: undefined
+undefined: undefined
+rss_path: undefined
+paginate: undefined
 #end
 
 # Build settings
