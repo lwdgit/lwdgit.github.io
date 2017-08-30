@@ -6,7 +6,7 @@ author: lwdgit
 github: https://github.com/lwdgit
 mail: lwdggm@gmail.com
 logo: https://avatars2.githubusercontent.com/u/5530205?v=3
-dataSource: .
+dataSource: blog
 rss_path: ./feed.xml
 #end
 
