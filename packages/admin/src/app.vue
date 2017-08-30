@@ -210,6 +210,7 @@ export default {
         max-width: 100%;
         box-sizing: border-box;
         flex: 1;
+        overflow-y: auto;
       }
     }
   }

@@ -14,14 +14,6 @@ let routes = [
     }
   },
   {
-    path: '/404',
-    component: resolve => require(['./pages/common/404'], resolve),
-    name: '404',
-    meta: {
-      requiresAuth: true
-    }
-  },
-  {
     path: '/',
     name: 'root',
     component: root,
@@ -29,6 +21,12 @@ let routes = [
       requiresAuth: true
     },
     children: [
+      {
+        path: '/_site_settings',
+        iconClass: 'el-icon-setting',
+        name: '站点设置',
+        component: resolve => require(['./pages/settings/index'], resolve)
+      },
       {
         path: '/',
         component: resolve => require(['./pages/editor/'], resolve)
@@ -41,8 +39,12 @@ let routes = [
     ]
   },
   {
-    path: '*',
-    redirect: { path: '/404' }
+    path: '/*',
+    component: resolve => require(['./pages/common/404'], resolve),
+    name: '404',
+    meta: {
+      requiresAuth: true
+    }
   }
 ];
 let menuCount = routes.length;
