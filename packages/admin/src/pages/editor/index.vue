@@ -13,7 +13,7 @@
         <el-col :xs="24" :sm="10" :md="6">
           <el-button type="primary" @click="save" :size="size">保存</el-button>
           <el-button @click="newPost" icon="plus" :size="size"></el-button>
-          <el-button type="danger" icon="delete" @click="removeFile" :size="size"></el-button>
+          <el-button type="danger" icon="delete" @click="confirmRemove" :size="size"></el-button>
         </el-col>
       </el-row>
       <el-row :gutter="12" v-else>
@@ -25,7 +25,7 @@
           </el-input>
         </el-col>
         <el-col :span="4">
-          <el-button type="danger" icon="delete" @click="removeFile" :size="size"></el-button>
+          <el-button type="danger" icon="delete" @click="confirmRemove" :size="size"></el-button>
         </el-col>
       </el-row>
     </el-form>
@@ -74,13 +74,16 @@ export default {
   created() {
     this.fetchFile();
     window.onpagehide = window.onunload = window.onbeforeunload = () => {
-      try {
-        localStorage.setItem(this.title, this.content);
-      } catch (e) {}
+      this.saveDraft();
     };
   },
   components: { mavonEditor },
   methods: {
+    saveDraft() {
+      try {
+        localStorage.setItem(this.title, this.content);
+      } catch (e) {}
+    },
     getTime(time) {
       const date = new Date(time);
       return `${date.getFullYear()}${this.pad(date.getMonth() + 1)}${this.pad(date.getDate())}${this.pad(date.getHours())}${this.pad(date.getMinutes())}${this.pad(date.getMilliseconds())}`;
@@ -99,7 +102,7 @@ export default {
       .fetch()
       .then(({ path, content, sha, name, downloadUrl }) => {
         path = path.split('/');
-        this.title = path.pop();
+        this.originTitle = this.title = path.pop();
         this.prefix = path.shift() === 'media' ? '我的图片' : '我的文档';
         this.path = path.join('/') || '';
         this.sha = sha;
@@ -179,6 +182,10 @@ export default {
           type: 'success',
           message: '保存成功'
         });
+        this.saveDraft();
+        if (this.originTitle && this.originTitle !== this.title) {
+          this.removeFile();
+        }
         this.originContent = this.content;
       })
       .catch((err = {}) => {
@@ -208,6 +215,7 @@ export default {
     },
     reset() {
       this.title = this.initTitle();
+      this.originTitle = '';
       this.content = '';
       this.downloadUrl = '';
       this.prefix = '我的文档';
@@ -215,15 +223,16 @@ export default {
       this.path = '';
       this.sha = null;
     },
-    removeFile(data) {
+    confirmRemove() {
       return this.$confirm('是否要删除此文件？')
-      .then(() => {
-        this.loading = true;
-        return repo.contents(this.$route.query.path)
-        .remove({
-          message: 'remove file',
-          sha: this.sha
-        });
+      .then(this.removeFile);
+    },
+    removeFile() {
+      this.loading = true;
+      return repo.contents(this.$route.query.path)
+      .remove({
+        message: 'remove file',
+        sha: this.sha
       })
       .then(() => {
         this.loading = false;
