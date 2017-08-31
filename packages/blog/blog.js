@@ -231,7 +231,7 @@ const About = {
   oninit () {
     const self = this
     m.request({
-      url: domain + '/about.md',
+      url: domain + '/about.md?rd=' + Math.random(),
       deserialize: ret => ret
     })
     .then(function (ret) {
