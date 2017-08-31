@@ -1,5 +1,5 @@
 <template>
-  <div id="big-form">
+  <div v-loading.body="saving">
     <!-- breadcrumb start  -->
     <breadcrumb></breadcrumb>
     <!-- breadcrumb end  -->
@@ -14,7 +14,6 @@
         </el-form-item>
       </el-form>
     </div>
-
   </div>
 </template>
 <script>
@@ -24,23 +23,7 @@ import { Base64 } from 'js-base64';
 export default {
   data() {
     return {
-      form: {
-        name: '',
-        school: '',
-        major: '',
-        company: '',
-        position: '',
-        gender: '',
-        birthday: '',
-        workDuration: null,
-        academic: null,
-        city: '',
-        phone: '',
-        email: '',
-        website: '',
-        skills: [],
-        resumeId: ''
-      },
+      saving: false,
       settings: []
     };
   },
@@ -84,22 +67,24 @@ export default {
       this.$refs.form.resetFields();
     },
     submit() {
-      console.log(this.settings);
       const content = this.originContent.replace(/#start([\w\W]*?)#end/m,
         '#start\n' +
         this.settings.map((item => `${item.name}: ${item.value}`)).join('\n') +
         '\n#end'
       );
-      console.log(content);
+      this.saving = true;
       this.repo.add({
         path: '_config.yml',
         message: 'update config',
         sha: this.sha,
         content: Base64.encode(content)
       }).then(() => {
+        this.saving = false;
+        this.$message('保存成功');
         return this.fetchSettings();
       })
       .catch((err) => {
+        this.saving = false;
         const message = /"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString();
         this.loading = false;
         this.$message.error(message.trim());
