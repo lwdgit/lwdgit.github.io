@@ -15,17 +15,29 @@ let routes = [
   },
   {
     path: '/',
-    name: 'root',
+    name: 'Home',
     component: root,
     meta: {
       requiresAuth: true
     },
     children: [
       {
-        path: '/_site_settings',
+        path: '_settings',
         iconClass: 'el-icon-setting',
         name: '站点设置',
-        component: resolve => require(['./pages/settings/index'], resolve)
+        component: root,
+        children: [
+          {
+            path: '_basic',
+            name: '基本设置',
+            component: resolve => require(['./pages/settings/index'], resolve)
+          },
+          {
+            path: '_about',
+            name: '关于我',
+            component: resolve => require(['./pages/settings/about'], resolve)
+          }
+        ]
       },
       {
         path: '/',

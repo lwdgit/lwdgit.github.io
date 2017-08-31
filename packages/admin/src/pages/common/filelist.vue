@@ -1,12 +1,20 @@
 <template>
-  <el-tree
-    v-loading.body="loading"
-    :data="fileTree"
-    node-key="_path"
-    @node-click="editFile"
-    :render-content="renderContent"
-    :default-expanded-keys="['_posts']"
-  ></el-tree>
+  <div>
+    <el-input
+      placeholder="搜索我的文档"
+      v-model="filterText">
+    </el-input>
+    <el-tree
+      ref="filelist"
+      v-loading.body="loading"
+      :data="fileTree"
+      node-key="_path"
+      @node-click="editFile"
+      :filter-node-method="filterNode"
+      :render-content="renderContent"
+      :default-expanded-keys="['_posts']"
+    ></el-tree>
+  </div>
 </template>
 
 <script>
@@ -48,11 +56,17 @@ function objToMenu(obj, dataArray) {
 export default {
   data() {
     return {
+      filterText: '',
       filelist: [],
       loading: false,
       fileTree: [],
       branches: ''
     };
+  },
+  watch: {
+    filterText(val) {
+      this.$refs['filelist'].filter(val);
+    }
   },
   mounted() {
     EventBus.$on('updateFiles', () => {
@@ -67,6 +81,10 @@ export default {
     this.fetchFiles();
   },
   methods: {
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.label.indexOf(value) !== -1 && data.label.endsWith('.md');
+    },
     fetchFiles() {
       if (!octo) {
         return;

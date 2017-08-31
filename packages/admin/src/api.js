@@ -4,6 +4,7 @@ import Octokat from 'octokat';
 let user = {};
 let octo = null;
 let repo = null;
+let base = null;
 
 function reset() {
   localStorage.clear();
@@ -25,7 +26,8 @@ function getUser() {
       password: Base64.decode(user.password)
     });
     repo = octo.repos(user.name, 'blog');
+    base = octo.repos(user.name, window.location.host);
   }
 }
 
-export { octo, repo, user, getUser };
+export { octo, repo, base, user, getUser };

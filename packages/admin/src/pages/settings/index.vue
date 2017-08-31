@@ -19,7 +19,7 @@
 </template>
 <script>
 import breadcrumb from '../../components/breadcrumb';
-import { repo } from '../../api';
+import { base } from '../../api';
 import { Base64 } from 'js-base64';
 export default {
   data() {
@@ -49,7 +49,7 @@ export default {
   },
   created() {
     // ^(?:([^:]+):)?\s*(.*)
-    this.repo = repo.contents('../../lwdgit.github.io/contents/_config.yml');
+    this.repo = base.contents('_config.yml');
     this.fetchSettings();
   },
   methods: {
