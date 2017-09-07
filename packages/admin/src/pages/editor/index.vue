@@ -34,16 +34,16 @@
   </article>
 </template>
 <script>
-import { Base64 } from 'js-base64';
-import { mavonEditor } from 'mavon-editor';
-import 'mavon-editor/dist/css/index.css';
-import { repo } from '../../api';
-import EventBus from '../../event-bus';
-import ImageCompressor from 'image-compressor';
-const smallDevice = window.innerWidth > 1100;
+import { Base64 } from 'js-base64'
+import { mavonEditor } from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
+import { repo } from '../../api'
+import EventBus from '../../event-bus'
+import ImageCompressor from 'image-compressor'
+const smallDevice = window.innerWidth > 1100
 
 export default {
-  data() {
+  data () {
     return {
       title: this.initTitle(),
       content: '',
@@ -69,247 +69,247 @@ export default {
         readmodel: true,
         save: true
       }
-    };
+    }
   },
-  created() {
-    this.fetchFile();
+  created () {
+    this.fetchFile()
     window.onpagehide = window.onunload = window.onbeforeunload = () => {
-      this.saveDraft();
-    };
+      this.saveDraft()
+    }
   },
   components: { mavonEditor },
   methods: {
-    saveDraft() {
+    saveDraft () {
       try {
-        localStorage.setItem(this.title, this.content);
+        localStorage.setItem(this.title, this.content)
       } catch (e) {}
     },
-    getTime(time) {
-      const date = new Date(time);
-      return `${date.getFullYear()}${this.pad(date.getMonth() + 1)}${this.pad(date.getDate())}${this.pad(date.getHours())}${this.pad(date.getMinutes())}${this.pad(date.getMilliseconds())}`;
+    getTime (time) {
+      const date = new Date(time)
+      return `${date.getFullYear()}${this.pad(date.getMonth() + 1)}${this.pad(date.getDate())}${this.pad(date.getHours())}${this.pad(date.getMinutes())}${this.pad(date.getMilliseconds())}`
     },
-    isMarkdown(path = this.title) {
-      return /\.md$/.test(path) || path.trim() === '';
+    isMarkdown (path = this.title) {
+      return /\.md$/.test(path) || path.trim() === ''
     },
-    fetchFile() {
+    fetchFile () {
       if (!this.$route.query.path) {
-        this.initContent();
-        return;
+        this.initContent()
+        return
       };
-      this.loading = true;
-      this.downloadUrl = '';
+      this.loading = true
+      this.downloadUrl = ''
       repo.contents(this.$route.query.path + '?rd=' + Math.random())
-      .fetch()
-      .then(({ path, content, sha, name, downloadUrl }) => {
-        path = path.split('/');
-        this.originTitle = this.title = path.pop();
-        this.prefix = path.shift() === 'media' ? '我的图片' : '我的文档';
-        this.path = path.join('/') || '';
-        this.sha = sha;
-        this.downloadUrl = downloadUrl;
-        this.initContent(content);
-        this.loading = false;
-      })
-      .catch((err = {}) => {
-        const message = /"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString();
-        this.loading = false;
-        if (~message.indexOf('not found')) {
-          this.content = '';
-          return;
-        }
-        this.$message.error(message.trim());
-      });
+        .fetch()
+        .then(({ path, content, sha, name, downloadUrl }) => {
+          path = path.split('/')
+          this.originTitle = this.title = path.pop()
+          this.prefix = path.shift() === 'media' ? '我的图片' : '我的文档'
+          this.path = path.join('/') || ''
+          this.sha = sha
+          this.downloadUrl = downloadUrl
+          this.initContent(content)
+          this.loading = false
+        })
+        .catch((err = {}) => {
+          const message = /"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString()
+          this.loading = false
+          if (~message.indexOf('not found')) {
+            this.content = ''
+            return
+          }
+          this.$message.error(message.trim())
+        })
     },
-    initContent(content) {
+    initContent (content) {
       if (!this.content) {
         if (this.isMarkdown(this.title)) {
           if (content) {
-            content = Base64.decode(content);
+            content = Base64.decode(content)
           }
-          let draft = '';
+          let draft = ''
           if ((draft = localStorage.getItem(this.title))) {
             if (!content || !draft) {
-              this.content = draft || content || '';
+              this.content = draft || content || ''
             } else if (draft !== content) {
               this.$confirm('检测到本地草稿与线上内容不一致，是否使用本地草稿？')
-              .then(() => {
-                this.content = draft;
-              })
-              .catch(() => {
-                this.content = content;
-              });
+                .then(() => {
+                  this.content = draft
+                })
+                .catch(() => {
+                  this.content = content
+                })
             } else {
-              this.content = content;
+              this.content = content
             }
             this.$nextTick(() => {
-              document.querySelector('.admin-body').scrollLeft = 1000;
-            });
+              document.querySelector('.admin-body').scrollLeft = 1000
+            })
           } else if (content) {
-            this.content = content;
+            this.content = content
           }
         } else {
-          this.content = content;
+          this.content = content
         }
       }
-      this.originContent = this.content;
+      this.originContent = this.content
     },
-    save() {
+    save () {
       if (!this.title) {
-        this.$message.error('请输入文件名');
-        return;
+        this.$message.error('请输入文件名')
+        return
       }
-      this.title = this.title.replace(/[\/\\]/g, '');
+      this.title = this.title.replace(/[/\\]/g, '')
       let path = [
         '_posts',
         this.path.replace(/(^\/|\/$)/g, ''),
         this.title
-      ].join('/').replace(/\/\/+/g, '/');
+      ].join('/').replace(/\/\/+/g, '/')
 
       const config = {
         path,
         message: 'update file: ' + path,
         content: this.isMarkdown() ? Base64.encode(this.content) : this.content
-      };
+      }
       if (this.sha) {
-        config.sha = this.sha;
+        config.sha = this.sha
       } else {
-        config.message = 'create file: ' + path;
+        config.message = 'create file: ' + path
       }
-      this.loading = true;
+      this.loading = true
       return this.upload(config)
-      .then(() => {
-        this.$message({
-          type: 'success',
-          message: '保存成功'
-        });
-        this.saveDraft();
-        if (this.originTitle && this.originTitle !== this.title) {
-          this.removeFile();
-        }
-        this.originContent = this.content;
-      })
-      .catch((err = {}) => {
-        const message = /"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString();
-        if (~message.indexOf('does not match')) {
-          this.fetchFile();
-        } else {
-          this.loading = false;
-          this.$message.error(message.trim());
-        }
-      });
+        .then(() => {
+          this.$message({
+            type: 'success',
+            message: '保存成功'
+          })
+          this.saveDraft()
+          if (this.originTitle && this.originTitle !== this.title) {
+            this.removeFile()
+          }
+          this.originContent = this.content
+        })
+        .catch((err = {}) => {
+          const message = /"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString()
+          if (~message.indexOf('does not match')) {
+            this.fetchFile()
+          } else {
+            this.loading = false
+            this.$message.error(message.trim())
+          }
+        })
     },
-    upload(config) {
+    upload (config) {
       return repo.contents(config.path).add(config)
-      .then((response) => {
-        this.loading = false;
-        EventBus.$emit('updateFiles');
-        return response;
-      });
+        .then((response) => {
+          this.loading = false
+          EventBus.$emit('updateFiles')
+          return response
+        })
     },
-    pad(num) {
-      return num > 9 ? num : '0' + num;
+    pad (num) {
+      return num > 9 ? num : '0' + num
     },
-    initTitle() {
-      const now = new Date();
-      return `${now.getFullYear()}-${this.pad(now.getMonth() + 1)}-${this.pad(now.getDate())}-请修改标题.md`;
+    initTitle () {
+      const now = new Date()
+      return `${now.getFullYear()}-${this.pad(now.getMonth() + 1)}-${this.pad(now.getDate())}-请修改标题.md`
     },
-    reset() {
-      this.title = this.initTitle();
-      this.originTitle = '';
-      this.content = '';
-      this.downloadUrl = '';
-      this.prefix = '我的文档';
-      this.originContent = '';
-      this.path = '';
-      this.sha = null;
+    reset () {
+      this.title = this.initTitle()
+      this.originTitle = ''
+      this.content = ''
+      this.downloadUrl = ''
+      this.prefix = '我的文档'
+      this.originContent = ''
+      this.path = ''
+      this.sha = null
     },
-    confirmRemove() {
+    confirmRemove () {
       return this.$confirm('是否要删除此文件？')
-      .then(this.removeFile);
+        .then(this.removeFile)
     },
-    removeFile() {
-      this.loading = true;
+    removeFile () {
+      this.loading = true
       return repo.contents(this.$route.query.path)
-      .remove({
-        message: 'remove file',
-        sha: this.sha
-      })
-      .then(() => {
-        this.loading = false;
-        this.$router.replace({
-          path: '/'
-        });
-        EventBus.$emit('updateFiles');
-      })
-      .catch((err = {}) => {
-        this.loading = false;
-        this.$message.error(/"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString());
-      });
+        .remove({
+          message: 'remove file',
+          sha: this.sha
+        })
+        .then(() => {
+          this.loading = false
+          this.$router.replace({
+            path: '/'
+          })
+          EventBus.$emit('updateFiles')
+        })
+        .catch((err = {}) => {
+          this.loading = false
+          this.$message.error(/"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString())
+        })
     },
-    newPost() {
+    newPost () {
       if (this.originContent !== this.content) {
-        return this.$confirm('是否放弃原有文章？').then(this.reset);
+        return this.$confirm('是否放弃原有文章？').then(this.reset)
       } else {
         this.$router.replace({
           path: '/'
-        });
-        this.reset();
+        })
+        this.reset()
       }
     },
-    getBase64(file) {
+    getBase64 (file) {
       return new Promise((resolve, reject) => {
         new ImageCompressor(file, { // eslint-disable-line
           quality: 0.6,
-          success(result) {
-            var reader = new FileReader();
-            reader.readAsDataURL(result);
-            reader.onload = resolve;
-            reader.onerror = reject;
+          success (result) {
+            var reader = new FileReader()
+            reader.readAsDataURL(result)
+            reader.onload = resolve
+            reader.onerror = reject
           },
-          error(e) {
-            reject(e);
+          error (e) {
+            reject(e)
           }
-        });
-      });
+        })
+      })
     },
-    imgAdd(filename, file) {
-      this.loading = true;
-      const name = 'media/' + this.getTime(Date.now()) + '.' + file.type.split('/').pop();
+    imgAdd (filename, file) {
+      this.loading = true
+      const name = 'media/' + this.getTime(Date.now()) + '.' + file.type.split('/').pop()
       this.getBase64(file)
-      .then((res) => {
-        return this.upload({
-          path: name,
-          message: 'upload image: ' + file.name,
-          content: res.target.result.slice(res.target.result.indexOf(',') + 1)
-        });
-      })
-      .then(({ content }) => {
-        this.$refs['editor'].$img2Url(filename, content.downloadUrl);
-      })
-      .catch((err = {}) => {
-        this.loading = false;
-        this.$message.error(/"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString());
-      });
+        .then((res) => {
+          return this.upload({
+            path: name,
+            message: 'upload image: ' + file.name,
+            content: res.target.result.slice(res.target.result.indexOf(',') + 1)
+          })
+        })
+        .then(({ content }) => {
+          this.$refs['editor'].$img2Url(filename, content.downloadUrl)
+        })
+        .catch((err = {}) => {
+          this.loading = false
+          this.$message.error(/"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString())
+        })
     },
-    copy() {
-      var copyTextarea = this.$refs['copyText'].$refs['input'];
-      copyTextarea.select();
+    copy () {
+      var copyTextarea = this.$refs['copyText'].$refs['input']
+      copyTextarea.select()
       try {
-        var successful = document.execCommand('copy');
-        var msg = successful ? '成功' : '失败';
-        this.$message('复制' + msg);
+        var successful = document.execCommand('copy')
+        var msg = successful ? '成功' : '失败'
+        this.$message('复制' + msg)
       } catch (err) {
-        this.$message.error('请手工复制链接');
+        this.$message.error('请手工复制链接')
       }
     }
   },
   watch: {
-    '$route.query'(val) {
-      this.reset();
-      this.fetchFile();
+    '$route.query' (val) {
+      this.reset()
+      this.fetchFile()
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .el-col {

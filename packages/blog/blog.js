@@ -119,14 +119,14 @@ const requestPost = function (attrs) {
   store.post.title = '加载中...'
 
   return m.request(host + attrs.url + '?rd=' + Math.random())
-  .then(ret => {
-    store.post = ret
-  })
-  .catch(err => {
-    store.post.title = 'Not Found'
-    store.post.content = 'Oops, 你查看的文章找不到了。'
-    throw new Error(err)
-  })
+    .then(ret => {
+      store.post = ret
+    })
+    .catch(err => {
+      store.post.title = 'Not Found'
+      store.post.content = 'Oops, 你查看的文章找不到了。'
+      throw new Error(err)
+    })
 }
 
 const Post = {
@@ -163,15 +163,15 @@ const Posts = {
     this.loading = true
     if (!this.next) return
     m.request(domain + this.next + '?rd=' + Math.random(), {mode: 'no-cors'})
-    .then((ret) => {
-      this.posts = [ ...this.posts, ...ret.posts ]
-      this.next = ret.next
-      this.loading = false
-    })
-    .catch((err) => {
-      console.log(err)
-      this.loading = false
-    })
+      .then((ret) => {
+        this.posts = [ ...this.posts, ...ret.posts ]
+        this.next = ret.next
+        this.loading = false
+      })
+      .catch((err) => {
+        console.log(err)
+        this.loading = false
+      })
   },
   onscrollEnd () {
     let container
@@ -234,9 +234,9 @@ const About = {
       url: domain + '/about.md?rd=' + Math.random(),
       deserialize: ret => ret
     })
-    .then(function (ret) {
-      self.about = md(ret)
-    })
+      .then(function (ret) {
+        self.about = md(ret)
+      })
   },
   view () {
     return Layout('about',

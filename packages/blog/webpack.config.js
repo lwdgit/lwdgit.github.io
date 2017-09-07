@@ -8,7 +8,6 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 
-
 const isProd = process.argv.slice(-1)[0] === '-p'
 
 isProd && rm('-rf', join(__dirname, './dist'))
@@ -17,7 +16,7 @@ module.exports = {
   entry: {
     dev: 'webpack/hot/dev-server',
     app: [
-      './blog.js' 
+      './blog.js'
     ]
   },
   devtool: '#cheap-module-eval-source-map',
@@ -90,7 +89,7 @@ module.exports = {
       }
     }),
     new WebpackMd5Hash(),
-    //new HtmlWebpackInlineSourcePlugin(),
+    // new HtmlWebpackInlineSourcePlugin(),
     new ExtractTextPlugin({
       filename: './dist/[name].[chunkhash].css',
       allChunks: true

@@ -1,8 +1,8 @@
-import Vue from 'vue';
+import Vue from 'vue'
 
 const root = Vue.component('root', {
   template: '<router-view></router-view>'
-});
+})
 
 let routes = [
   {
@@ -58,13 +58,13 @@ let routes = [
       requiresAuth: true
     }
   }
-];
-let menuCount = routes.length;
+]
+let menuCount = routes.length
 routes[menuCount - 2].children.forEach(route => {
   if (route.children) {
-    if (!route.meta) route.meta = {};
-    route.meta.children = route.children;
+    if (!route.meta) route.meta = {}
+    route.meta.children = route.children
   }
-});
+})
 
-export default routes;
+export default routes

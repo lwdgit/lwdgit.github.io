@@ -114,9 +114,9 @@ const Post = {
       title: '加载中'
     }
     m.request(domain + '/' + 'post/' + vnode.attrs.category + '/' + vnode.attrs.id)
-    .then((ret) => {
-      this.post = ret
-    })
+      .then((ret) => {
+        this.post = ret
+      })
   },
   view () {
     return Layout('post', [
@@ -150,11 +150,11 @@ const Posts = {
     this.loading = true
     if (!this.next) return
     m.request(domain + this.next, {mode: 'no-cors'})
-    .then((ret) => {
-      this.posts = [...this.posts, ...ret.posts]
-      this.next = ret.next
-      this.loading = false
-    })
+      .then((ret) => {
+        this.posts = [...this.posts, ...ret.posts]
+        this.next = ret.next
+        this.loading = false
+      })
   },
   onscrollEnd () {
     let container
@@ -218,9 +218,9 @@ const About = {
       url: domain + '/about.md',
       deserialize: ret => ret
     })
-    .then(function (ret) {
-      self.about = md(ret)
-    })
+      .then(function (ret) {
+        self.about = md(ret)
+      })
   },
   view () {
     return Layout('about',

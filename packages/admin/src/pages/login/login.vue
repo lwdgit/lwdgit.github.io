@@ -34,68 +34,68 @@
 </template>
 
 <script>
-import Octokat from 'octokat';
-import { Base64 } from 'js-base64';
+import Octokat from 'octokat'
+import { Base64 } from 'js-base64'
 export default {
-  data() {
+  data () {
     return {
       username: '',
       password: '',
       rememberMe: false,
       isBtnLoading: false
-    };
+    }
   },
   computed: {
-    btnText() {
-      if (this.isBtnLoading) return '登录中...';
-      return '登录';
+    btnText () {
+      if (this.isBtnLoading) return '登录中...'
+      return '登录'
     }
   },
   methods: {
-    login() {
+    login () {
       if (!this.username) {
-        this.$message.error('请填写用户名！！！');
-        return;
+        this.$message.error('请填写用户名！！！')
+        return
       }
       if (!this.password) {
-        this.$message.error('请填写密码');
-        return;
+        this.$message.error('请填写密码')
+        return
       }
-      this.isBtnLoading = true;
-      this.tryLogin();
+      this.isBtnLoading = true
+      this.tryLogin()
     },
-    tryLogin() {
+    tryLogin () {
       var octo = new Octokat({
         username: this.username,
         password: this.password
-      });
+      })
       octo.zen.read((err, val) => {
         if (!err) {
-          this.saveCredient();
+          this.saveCredient()
           this.$router.replace({
             path: '/'
-          });
+          })
         } else {
-          this.$message.error('账号或密码有误！');
+          this.$message.error('账号或密码有误！')
         }
         setTimeout(() => {
-          this.isBtnLoading = false;
-        }, 10000);
-      });
+          this.isBtnLoading = false
+        }, 10000)
+      })
     },
-    saveCredient() {
+    saveCredient () {
       let user = {
         name: this.username,
         password: Base64.encode(this.password)
-      };
+      }
       if (this.rememberMe) {
-        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('user', JSON.stringify(user))
       } else {
-        sessionStorage.setItem('user', JSON.stringify(user));
+        sessionStorage.setItem('user', JSON.stringify(user))
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

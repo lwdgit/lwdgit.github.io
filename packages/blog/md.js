@@ -6,8 +6,8 @@ const renderer = new marked.Renderer()
 renderer.listitem = function (text) {
   if (/^\s*\[[x ]\]\s*/.test(text)) {
     text = text
-    .replace(/^\s*\[ \]\s*/, '<input type="checkbox" disabled class="empty checkbox"> ')
-    .replace(/^\s*\[x\]\s*/, '<input type="checkbox" checked disabled class="checked checkbox icon"> ')
+      .replace(/^\s*\[ \]\s*/, '<input type="checkbox" disabled class="empty checkbox"> ')
+      .replace(/^\s*\[x\]\s*/, '<input type="checkbox" checked disabled class="checked checkbox icon"> ')
     return '<li style="list-style: none">' + text + '</li>'
   } else {
     return '<li>' + text + '</li>'
