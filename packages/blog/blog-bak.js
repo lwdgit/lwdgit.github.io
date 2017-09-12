@@ -5,7 +5,9 @@ import './theme/md.less'
 import './theme/style.less'
 
 const meta = (function () {
-  const _meta = {}
+  const _meta = {
+    title: document.title
+  }
   Array.prototype.forEach.call(document.querySelectorAll('meta'), function (item) {
     if (item.name) {
       _meta[item.name] = item.content
@@ -14,52 +16,47 @@ const meta = (function () {
   return _meta
 }())
 
-const host = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'https://lwdgit.github.io/' : './'
-const domain = host + meta.base
+const domain = window.location.hostname !== 'localhost' ? 'https://lwdgit.github.io/blog/' : ~(meta.base || '').indexOf('{{') ? './data' : meta.base
 
+let firstLanuch = true
 const Layout = function (category, content, title, index) {
   return m('.page', [
     Header(category, title, index),
-    m('main', [
-      m('.container .' + category, content)
-    ]),
+    m('main.' + category, content),
     Footer
   ])
 }
 
-const store = {
-  showMenu: false,
-  post: {}
-}
+let showMenu = false
+let isBack = false
 
-const Header = (category, title = '', index = 0) => {
-  if (title) {
-    document.title = title + ' - ' + (meta.title || '极简博客')
-  } else {
-    document.title = (meta.title || '极简博客')
+window.addEventListener('popstate', function () {
+  isBack = true
+})
+
+const Header = (category, title = (meta.title || '极简博客'), index = 0) => {
+  document.title = title
+  if (firstLanuch && category === 'post') {
+    firstLanuch = false
   }
 
   return m('header', [
     m('nav.navigation', [
       m('.menu.kissfont', {
         class: index === 0 ? 'kiss-menu' : 'kiss-arrow-back',
-        onclick: (e) => {
+        onclick: () => {
           if (index === 0) {
-            store.showMenu = true
+            showMenu = true
           } else {
-            if (~document.referrer.indexOf(window.location.host)) {
-              m.route.set('/')
-            } else {
-              window.history.back()
-            }
+            window.history.back()
           }
         }
       }),
       m('.title', title),
       m('label.wrap', {
-        class: store.showMenu && 'show',
+        class: showMenu && 'show',
         onclick: () => {
-          store.showMenu = false
+          showMenu = false
         }
       }, m('aside', [
         m('.header', [
@@ -74,84 +71,74 @@ const Header = (category, title = '', index = 0) => {
           '首页'
         ]),
         m('a', {
+          href: '/projects',
+          oncreate: m.route.link,
+          class: category === 'project' && 'active'
+        }, [
+          m('i.kissfont.kiss-project'),
+          '项目'
+        ]),
+        m('a', {
           href: '/about',
           oncreate: m.route.link,
           class: category === 'about' && 'active'
         }, [
           m('i.kissfont.kiss-about'),
           '关于'
-        ]),
-        m('a', {
-          href: './admin'
-        }, [
-          m('i.kissfont.kiss-login'),
-          '登录'
         ])
       ]))
     ])
   ])
 }
 
-const links = []
-if (meta.github) {
-  links.push(m('a', {
-    href: meta.github
-  }, 'Github'))
-}
-
-if (meta.mail) {
-  links.push(m('a', {
-    href: 'mailto:' + meta.mail + '?subject=Hello world'
-  }, 'Mail'))
-}
-
 const Footer = m('footer', [
-  m('.links.left', [
-    m('a.copy-right', {
-      href: 'https://github.com/lwdgit/kiss'
-    }, '© 2017 Kiss Blog')
-  ]),
-  m('.links', links)
+  m('a.copy-right', {
+    href: 'https://github.com/lwdgit/kiss'
+  }, '© 2017 Kiss Blog'),
+  m('.links', [
+    m('a', {
+      href: meta.github
+    }, 'Github'),
+    m('a', {
+      href: 'mailto:' + meta.mail + '?subject=Hello world'
+    }, 'Mail')
+  ])
 ])
-
-const requestPost = function (attrs) {
-  store.post = {}
-  store.post.title = '加载中...'
-
-  return m.request(host + attrs.url + '?rd=' + Math.random())
-    .then(ret => {
-      store.post = ret
-    })
-    .catch(err => {
-      store.post.title = 'Not Found'
-      store.post.content = 'Oops, 你查看的文章找不到了。'
-      throw new Error(err)
-    })
-}
 
 const Post = {
   inited: false,
-  view (vnode) {
+  post: {},
+  oninit (vnode) {
+    if (!this) return
+    this.post = {
+      title: '加载中'
+    }
+    m.request(domain + '/' + 'post/' + vnode.attrs.category + '/' + vnode.attrs.id)
+      .then((ret) => {
+        this.post = ret
+      })
+  },
+  view () {
     return Layout('post', [
       m('banner', [
-        m('h3', m('.title', store.post.title))
+        m('h3', m('.title', this.post.title))
       ]),
       m('.meta', [
-        m('span.date', store.post.date),
-        m('span.category', store.post.category)
+        m('span.date', this.post.date),
+        m('span.category', this.post.category)
       ]),
-      m('article.markdown-body', m.trust(md(store.post.content || ''))),
+      m('article.markdown-body', m.trust(md(this.post.content || ''))),
       m('nav', [
-        store.post.prev ? m('a', {
-          href: store.post.prev.url,
+        this.post.prev ? m('a', {
+          href: '/' + this.post.prev.url,
           oncreate: m.route.link
-        }, '上一篇:' + store.post.prev.title) : null,
-        store.post.next ? m('a', {
-          href: store.post.next.url,
+        }, '上一篇:' + this.post.prev.title) : null,
+        this.post.next ? m('a', {
+          href: '/' + this.post.next.url,
           oncreate: m.route.link
-        }, '下一篇:' + store.post.next.title) : null
+        }, '下一篇:' + this.post.next.title) : null
       ])
-    ], store.post.title, 1)
+    ], this.post.title, 1)
   }
 }
 
@@ -162,14 +149,10 @@ const Posts = {
   getData: function () {
     this.loading = true
     if (!this.next) return
-    m.request(domain + this.next + '?rd=' + Math.random(), {mode: 'no-cors'})
+    m.request(domain + this.next, {mode: 'no-cors'})
       .then((ret) => {
-        this.posts = [ ...this.posts, ...ret.posts ]
+        this.posts = [...this.posts, ...ret.posts]
         this.next = ret.next
-        this.loading = false
-      })
-      .catch((err) => {
-        console.log(err)
         this.loading = false
       })
   },
@@ -177,7 +160,7 @@ const Posts = {
     let container
     window.addEventListener('scroll', (e) => {
       if (this.loading) return
-      container = container || document.querySelector('.page main .posts')
+      container = container || document.querySelector('.posts')
       if (!container) {
         return
       }
@@ -185,7 +168,7 @@ const Posts = {
         this.getData()
       }
       document.body.scrollTop = 0
-    }, true)
+    })
   },
   oninit () {
     this.getData()
@@ -199,7 +182,7 @@ const Posts = {
         m('.head', [
           m('h3', [
             m('a.title', {
-              href: item.url,
+              href: '/' + item.url,
               oncreate: m.route.link
             }, item.title)
           ])
@@ -223,15 +206,16 @@ const Posts = {
         </svg>
       `))
     )
-    return Layout('posts', posts, '文章列表')
+    return Layout('posts', posts)
   }
 }
 
 const About = {
+  about: null,
   oninit () {
     const self = this
     m.request({
-      url: domain + '/about.md?rd=' + Math.random(),
+      url: domain + '/about.md',
       deserialize: ret => ret
     })
       .then(function (ret) {
@@ -252,20 +236,43 @@ const Projects = {
   view () {}
 }
 
-m.route(document.body, '/', {
-  '/': Posts,
-  '/about': About,
-  '/projects': Projects,
-  ':url...': {
+let PageList = [{
+  component: Posts,
+  attrs: {}
+}]
+let deepth = 0
+const navigateTo = function (component, index = 0) {
+  return {
     onmatch (attrs) {
-      if (!attrs.url) {
-        m.route.set('/')
+      if (isBack) {
+        deepth--
+        isBack = false
       } else {
-        requestPost(attrs)
+        deepth += index
       }
+
+      deepth = Math.max(0, deepth)
+      PageList[deepth] = {
+        component,
+        attrs
+      }
+      PageList = PageList.slice(0, deepth + 1)
+      return component
     },
     render (vnode) {
-      return m(Post)
+      const style = {
+        width: 100 * (deepth + 1) + 'vw',
+        '-webkit-transform': `translate3D(-${100 * deepth}vw, 0, 0)`,
+        transform: `translateX(-${100 * deepth}vw, 0, 0)`
+      }
+      return m('.page-list', {style: style}, PageList.map(c => m(c.component, c.attrs)))
     }
   }
+}
+
+m.route(document.body, '/', {
+  '/': navigateTo(Posts),
+  '/post/:category/:id': navigateTo(Post, 1),
+  '/about': navigateTo(About),
+  '/projects': Projects
 })
