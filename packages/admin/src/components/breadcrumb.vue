@@ -11,16 +11,16 @@
 export default {
   name: 'db-breadcrumb',
 
-  data() {
+  data () {
     return {
       breadcrumbs: []
-    };
+    }
   },
 
-  mounted() {
-    this.breadcrumbs = (this.$parent && this.$parent.$route && this.$parent.$route.matched) || [];
+  mounted () {
+    this.breadcrumbs = (this.$parent && this.$parent.$route && this.$parent.$route.matched) || []
   }
-};
+}
 </script>
 
 <style lang="css">

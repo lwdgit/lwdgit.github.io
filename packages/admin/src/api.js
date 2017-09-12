@@ -1,33 +1,33 @@
-import { Base64 } from 'js-base64';
-import Octokat from 'octokat';
+import { Base64 } from 'js-base64'
+import Octokat from 'octokat'
 
-let user = {};
-let octo = null;
-let repo = null;
-let base = null;
+let user = {}
+let octo = null
+let repo = null
+let base = null
 
-function reset() {
-  localStorage.clear();
-  sessionStorage.clear();
+function reset () {
+  localStorage.clear()
+  sessionStorage.clear()
 }
 
-function getUser() {
+function getUser () {
   try {
-    user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user'));
+    user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user'))
   } catch (e) {
-    reset();
+    reset()
   }
-  user = user || {};
+  user = user || {}
   if (!user.name) {
-    reset();
+    reset()
   } else {
     octo = new Octokat({
       username: user.name,
       password: Base64.decode(user.password)
-    });
-    repo = octo.repos(user.name, 'blog');
-    base = octo.repos(user.name, window.location.host);
+    })
+    repo = octo.repos(user.name, 'blog')
+    base = octo.repos(user.name, window.location.host)
   }
 }
 
-export { octo, repo, base, user, getUser };
+export { octo, repo, base, user, getUser }

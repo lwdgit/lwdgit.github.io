@@ -15,15 +15,15 @@
   </article>
 </template>
 <script>
-import { Base64 } from 'js-base64';
-import { mavonEditor } from 'mavon-editor';
-import 'mavon-editor/dist/css/index.css';
-import { repo } from '../../api';
-import ImageCompressor from 'image-compressor';
-const smallDevice = window.innerWidth > 1100;
+import { Base64 } from 'js-base64'
+import { mavonEditor } from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
+import { repo } from '../../api'
+import ImageCompressor from 'image-compressor'
+const smallDevice = window.innerWidth > 1100
 
 export default {
-  data() {
+  data () {
     return {
       title: 'about.md',
       content: '',
@@ -49,186 +49,186 @@ export default {
         readmodel: true,
         save: true
       }
-    };
+    }
   },
-  created() {
-    this.fetchFile();
+  created () {
+    this.fetchFile()
     window.onpagehide = window.onunload = window.onbeforeunload = () => {
       try {
-        localStorage.setItem(this.title, this.content);
+        localStorage.setItem(this.title, this.content)
       } catch (e) {}
-    };
+    }
   },
   components: { mavonEditor },
   methods: {
-    getTime(time) {
-      const date = new Date(time);
-      return `${date.getFullYear()}${this.pad(date.getMonth() + 1)}${this.pad(date.getDate())}${this.pad(date.getHours())}${this.pad(date.getMinutes())}${this.pad(date.getMilliseconds())}`;
+    getTime (time) {
+      const date = new Date(time)
+      return `${date.getFullYear()}${this.pad(date.getMonth() + 1)}${this.pad(date.getDate())}${this.pad(date.getHours())}${this.pad(date.getMinutes())}${this.pad(date.getMilliseconds())}`
     },
-    isMarkdown(path = this.title) {
-      return /\.md$/.test(path) || path.trim() === '';
+    isMarkdown (path = this.title) {
+      return /\.md$/.test(path) || path.trim() === ''
     },
-    fetchFile() {
-      this.loading = true;
-      this.downloadUrl = '';
+    fetchFile () {
+      this.loading = true
+      this.downloadUrl = ''
       repo.contents('about.md?rd=' + Math.random())
-      .fetch()
-      .then(({ path, content, sha, name, downloadUrl }) => {
-        path = path.split('/');
-        this.title = path.pop();
-        this.prefix = '';
-        this.path = path.join('/') || '';
-        this.sha = sha;
-        this.downloadUrl = downloadUrl;
-        this.initContent(content);
-        this.loading = false;
-      })
-      .catch((err = {}) => {
-        const message = /"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString();
-        this.loading = false;
-        if (~message.indexOf('not found')) {
-          this.content = '';
-          return;
-        }
-        this.$message.error(message.trim());
-      });
+        .fetch()
+        .then(({ path, content, sha, name, downloadUrl }) => {
+          path = path.split('/')
+          this.title = path.pop()
+          this.prefix = ''
+          this.path = path.join('/') || ''
+          this.sha = sha
+          this.downloadUrl = downloadUrl
+          this.initContent(content)
+          this.loading = false
+        })
+        .catch((err = {}) => {
+          const message = (/"message": "([^"]+)/m.test(err.message) && RegExp.$1) || err.toString()
+          this.loading = false
+          if (~message.indexOf('not found')) {
+            this.content = ''
+            return
+          }
+          this.$message.error(message.trim())
+        })
     },
-    initContent(content) {
+    initContent (content) {
       if (!this.content) {
         if (this.isMarkdown(this.title)) {
           if (content) {
-            content = Base64.decode(content);
+            content = Base64.decode(content)
           }
-          let draft = '';
+          let draft = ''
           if ((draft = localStorage.getItem(this.title))) {
             if (!content || !draft) {
-              this.content = draft || content || '';
+              this.content = draft || content || ''
             } else if (draft !== content) {
               this.$confirm('检测到本地草稿与线上内容不一致，是否使用本地草稿？')
-              .then(() => {
-                this.content = draft;
-              })
-              .catch(() => {
-                this.content = content;
-              });
+                .then(() => {
+                  this.content = draft
+                })
+                .catch(() => {
+                  this.content = content
+                })
             } else {
-              this.content = content;
+              this.content = content
             }
             this.$nextTick(() => {
-              document.querySelector('.admin-body').scrollLeft = 1000;
-            });
+              document.querySelector('.admin-body').scrollLeft = 1000
+            })
           } else if (content) {
-            this.content = content;
+            this.content = content
           }
         } else {
-          this.content = content;
+          this.content = content
         }
       }
-      this.originContent = this.content;
+      this.originContent = this.content
     },
-    save() {
+    save () {
       if (!this.title) {
-        this.$message.error('请输入文件名');
-        return;
+        this.$message.error('请输入文件名')
+        return
       }
-      this.title = this.title.replace(/[\/\\]/g, '');
+      this.title = this.title.replace(/[/\\]/g, '')
       let path = [
         './',
         this.path.replace(/(^\/|\/$)/g, ''),
         this.title
-      ].join('/').replace(/\/\/+/g, '/');
+      ].join('/').replace(/\/\/+/g, '/')
 
       const config = {
         path,
         message: 'update file: ' + path,
         content: this.isMarkdown() ? Base64.encode(this.content) : this.content
-      };
-      if (this.sha) {
-        config.sha = this.sha;
-      } else {
-        config.message = 'create file: ' + path;
       }
-      this.loading = true;
+      if (this.sha) {
+        config.sha = this.sha
+      } else {
+        config.message = 'create file: ' + path
+      }
+      this.loading = true
       return this.upload(config)
-      .then(() => {
-        this.$message({
-          type: 'success',
-          message: '保存成功'
-        });
-        this.originContent = this.content;
-      })
-      .catch((err = {}) => {
-        const message = /"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString();
-        if (~message.indexOf('does not match')) {
-          this.fetchFile();
-        } else {
-          this.loading = false;
-          this.$message.error(message.trim());
-        }
-      });
+        .then(() => {
+          this.$message({
+            type: 'success',
+            message: '保存成功'
+          })
+          this.originContent = this.content
+        })
+        .catch((err = {}) => {
+          const message = (/"message": "([^"]+)/m.test(err.message) && RegExp.$1) || err.toString()
+          if (~message.indexOf('does not match')) {
+            this.fetchFile()
+          } else {
+            this.loading = false
+            this.$message.error(message.trim())
+          }
+        })
     },
-    upload(config) {
+    upload (config) {
       return repo.contents(config.path).add(config)
-      .then((response) => {
-        this.loading = false;
-        return response;
-      });
+        .then((response) => {
+          this.loading = false
+          return response
+        })
     },
-    pad(num) {
-      return num > 9 ? num : '0' + num;
+    pad (num) {
+      return num > 9 ? num : '0' + num
     },
-    reset() {
-      this.title = 'about.md';
-      this.content = '';
-      this.downloadUrl = '';
-      this.prefix = '';
-      this.originContent = '';
-      this.path = '';
-      this.sha = null;
+    reset () {
+      this.title = 'about.md'
+      this.content = ''
+      this.downloadUrl = ''
+      this.prefix = ''
+      this.originContent = ''
+      this.path = ''
+      this.sha = null
     },
-    getBase64(file) {
+    getBase64 (file) {
       return new Promise((resolve, reject) => {
         new ImageCompressor(file, { // eslint-disable-line
           quality: 0.6,
-          success(result) {
-            var reader = new FileReader();
-            reader.readAsDataURL(result);
-            reader.onload = resolve;
-            reader.onerror = reject;
+          success (result) {
+            var reader = new FileReader()
+            reader.readAsDataURL(result)
+            reader.onload = resolve
+            reader.onerror = reject
           },
-          error(e) {
-            reject(e);
+          error (e) {
+            reject(e)
           }
-        });
-      });
+        })
+      })
     },
-    imgAdd(filename, file) {
-      this.loading = true;
-      const name = 'media/' + this.getTime(Date.now()) + '.' + file.type.split('/').pop();
+    imgAdd (filename, file) {
+      this.loading = true
+      const name = 'media/' + this.getTime(Date.now()) + '.' + file.type.split('/').pop()
       this.getBase64(file)
-      .then((res) => {
-        return this.upload({
-          path: name,
-          message: 'upload image: ' + file.name,
-          content: res.target.result.slice(res.target.result.indexOf(',') + 1)
-        });
-      })
-      .then(({ content }) => {
-        this.$refs['editor'].$img2Url(filename, content.downloadUrl);
-      })
-      .catch((err = {}) => {
-        this.loading = false;
-        this.$message.error(/"message": "([^"]+)/m.test(err.message) && RegExp.$1 || err.toString());
-      });
+        .then((res) => {
+          return this.upload({
+            path: name,
+            message: 'upload image: ' + file.name,
+            content: res.target.result.slice(res.target.result.indexOf(',') + 1)
+          })
+        })
+        .then(({ content }) => {
+          this.$refs['editor'].$img2Url(filename, content.downloadUrl)
+        })
+        .catch((err = {}) => {
+          this.loading = false
+          this.$message.error((/"message": "([^"]+)/m.test(err.message) && RegExp.$1) || err.toString())
+        })
     }
   },
   watch: {
-    '$route.query'(val) {
-      this.reset();
-      this.fetchFile();
+    '$route.query' (val) {
+      this.reset()
+      this.fetchFile()
     }
   }
-};
+}
 </script>
 <style lang="scss" scoped>
 .el-col {

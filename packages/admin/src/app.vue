@@ -60,9 +60,9 @@
 </template>
 
 <script>
-import Filelist from './pages/common/filelist';
+import Filelist from './pages/common/filelist'
 export default {
-  data() {
+  data () {
     return {
       user: {
         name: '',
@@ -72,69 +72,69 @@ export default {
       sideBarWidth: '16%',
       openSideBar: true,
       activeMenu: ''
-    };
+    }
   },
   components: { Filelist },
-  created() {
-    this.activeMenu = this.$route.name;
-    this.setUser();
-    this.$nextTick(this.initSidebar);
+  created () {
+    this.activeMenu = this.$route.name
+    this.setUser()
+    this.$nextTick(this.initSidebar)
   },
   watch: {
-    '$route'(to, from) {
-      this.activeMenu = this.$route.name;
-      this.setUser();
+    '$route' (to, from) {
+      this.activeMenu = this.$route.name
+      this.setUser()
     }
   },
   methods: {
-    initSidebar() {
-      const aside = this.$refs['aside'];
-      const resizer = this.$refs['resizer'];
-      let currentWidth = aside.offsetWidth;
+    initSidebar () {
+      const aside = this.$refs['aside']
+      const resizer = this.$refs['resizer']
+      let currentWidth = aside.offsetWidth
       const position = {
         startX: 0,
         endX: 0,
         release: true
-      };
-      this.sideBarWidth = currentWidth + 'px';
+      }
+      this.sideBarWidth = currentWidth + 'px'
       resizer.addEventListener('mousedown', (e) => {
-        position.release = false;
-        position.startX = e.clientX;
-        this.globalClass = 'no-select';
-      });
+        position.release = false
+        position.startX = e.clientX
+        this.globalClass = 'no-select'
+      })
       window.addEventListener('mousemove', (e) => {
-        if (position.release) return;
-        position.endX = e.clientX;
-        this.sideBarWidth = currentWidth + (position.endX - position.startX) + 'px';
-      });
+        if (position.release) return
+        position.endX = e.clientX
+        this.sideBarWidth = currentWidth + (position.endX - position.startX) + 'px'
+      })
       window.addEventListener('mouseup', (e) => {
-        position.release = true;
-        currentWidth = parseInt(this.sideBarWidth, 10);
-        this.globalClass = '';
-      });
+        position.release = true
+        currentWidth = parseInt(this.sideBarWidth, 10)
+        this.globalClass = ''
+      })
     },
-    setUser() {
+    setUser () {
       try {
-        this.user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user')) || {};
+        this.user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user')) || {}
       } catch (e) {
-        this.user = {};
+        this.user = {}
       }
     },
-    gotoHome() {
-      location.href = '../';
+    gotoHome () {
+      location.href = '../'
     },
-    logout() {
+    logout () {
       this.$confirm('确定要注销吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'info'
       }).then(() => {
-        localStorage.removeItem('user');
-        this.$router.push({ path: '/login' });
-      }).catch(() => {});
+        localStorage.removeItem('user')
+        this.$router.push({ path: '/login' })
+      }).catch(() => {})
     }
   }
-};
+}
 </script>
 
 <style lang="scss">
